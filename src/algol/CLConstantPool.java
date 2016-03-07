@@ -12,17 +12,17 @@ public class CLConstantPool {
 
     private ArrayList<CLCPInfo> cpItems;
 
-    public CLConstantPool() {
-        cpIndex = 1;
-        cpItems = new ArrayList<CLCPInfo>();
-    }
-
     private int findOrAdd(CLCPInfo cpInfo) {
         int index = find(cpInfo);
         if (index == -1) {
             index = addCPItem(cpInfo);
         }
         return index;
+    }
+
+    public CLConstantPool() {
+        cpIndex = 1;
+        cpItems = new ArrayList<CLCPInfo>();
     }
 
     public int size() {
@@ -66,4 +66,66 @@ public class CLConstantPool {
             }
         }
     }
+
+    public int constantClassInfo(String s) {
+        CLCPInfo c = new CLConstantClassInfo(constantUtf8Info(s));
+        return findOrAdd(c);
+    }
+
+    public int constantFieldRefInfo(String className, String name, String type) {
+        CLCPInfo c = new CLConstantFieldRefInfo(constantClassInfo(className),
+                constantNameAndTypeInfo(name, type));
+        return findOrAdd(c);
+    }
+
+    public int constantMethodRefInfo(String className, String name, String type) {
+        CLCPInfo c = new CLConstantMethodRefInfo(constantClassInfo(className),
+                constantNameAndTypeInfo(name, type));
+        return findOrAdd(c);
+    }
+
+    public int constantInterfaceMethodRefInfo(String className, String name,
+                                              String type) {
+        CLCPInfo c = new CLConstantInterfaceMethodRefInfo(
+                constantClassInfo(className), constantNameAndTypeInfo(name,
+                type));
+        return findOrAdd(c);
+    }
+
+    public int constantStringInfo(String s) {
+        CLCPInfo c = new CLConstantStringInfo(constantUtf8Info(s));
+        return findOrAdd(c);
+    }
+
+    public int constantIntegerInfo(int i) {
+        CLCPInfo c = new CLConstantIntegerInfo(i);
+        return findOrAdd(c);
+    }
+
+    public int constantFloatInfo(float f) {
+        CLCPInfo c = new CLConstantFloatInfo(f);
+        return findOrAdd(c);
+    }
+
+    public int constantLongInfo(long l) {
+        CLCPInfo c = new CLConstantLongInfo(l);
+        return findOrAdd(c);
+    }
+
+    public int constantDoubleInfo(double d) {
+        CLCPInfo c = new CLConstantDoubleInfo(d);
+        return findOrAdd(c);
+    }
+
+    public int constantNameAndTypeInfo(String name, String type) {
+        CLCPInfo c = new CLConstantNameAndTypeInfo(constantUtf8Info(name),
+                constantUtf8Info(type));
+        return findOrAdd(c);
+    }
+
+    public int constantUtf8Info(String s) {
+        CLCPInfo c = new CLConstantUtf8Info(s.getBytes());
+        return findOrAdd(c);
+    }
+
 }
