@@ -1,5 +1,16 @@
 *.class
 
+# User-specific stuff:
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+
+# Gradle:
+.idea/gradle.xml
+.idea/libraries
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -8,5 +19,13 @@
 *.war
 *.ear
 
+## File-based project format:
+*.iws
+
+# IntelliJ
+/out
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+

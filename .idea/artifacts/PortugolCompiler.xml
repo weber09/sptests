@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PortugolCompiler">
+    <output-path>$PROJECT_DIR$/out/artifacts/PortugolCompiler</output-path>
+    <root id="archive" name="PortugolCompiler.jar">
+      <element id="module-output" name="PortugolCompiler" />
+    </root>
+  </artifact>
+</component>
