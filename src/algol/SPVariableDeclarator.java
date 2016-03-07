@@ -1,3 +1,5 @@
+package algol;
+
 import java.lang.reflect.Type;
 
 /**
