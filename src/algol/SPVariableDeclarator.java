@@ -1,4 +1,4 @@
-import java.lang.reflect.Type;
+package algol;
 
 /**
  * Created by Gabriel on 06/03/2016.
@@ -17,6 +17,10 @@ public class SPVariableDeclarator extends SPAST {
 
     private Type type;
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public SPVariableDeclarator(int line, String name, Type type)
     {
         super(line);
@@ -24,8 +28,10 @@ public class SPVariableDeclarator extends SPAST {
         this.type = type;
     }
 
-    @Override
-    public SPAST analyze() {
+    public SPVariableDeclarator analyze(Context context) {
         return this;
+    }
+
+    public void codegen(CLEmitter output) {
     }
 }
