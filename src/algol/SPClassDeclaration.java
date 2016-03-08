@@ -93,17 +93,19 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
     }
 
     public SPAST analyze(Context context) {
-        for (SPMember member : classBlock) {
-            ((SPAST) member).analyze(this.context);
-        }
+        if(classBlock != null) {
+            for (SPMember member : classBlock) {
+                ((SPAST) member).analyze(this.context);
+            }
 
-        for (SPMember member : classBlock) {
-            if (member instanceof SPFieldDeclaration) {
-                SPFieldDeclaration fieldDecl = (SPFieldDeclaration) member;
-                if (fieldDecl.mods().contains("static")) {
-                    staticFieldInitializations.add(fieldDecl);
-                } else {
-                    instanceFieldInitializations.add(fieldDecl);
+            for (SPMember member : classBlock) {
+                if (member instanceof SPFieldDeclaration) {
+                    SPFieldDeclaration fieldDecl = (SPFieldDeclaration) member;
+                    if (fieldDecl.mods().contains("static")) {
+                        staticFieldInitializations.add(fieldDecl);
+                    } else {
+                        instanceFieldInitializations.add(fieldDecl);
+                    }
                 }
             }
         }
@@ -130,8 +132,10 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
             codegenImplicitConstructor(output);
         }
 
-        for (SPMember member : classBlock) {
-            ((SPAST) member).codegen(output);
+        if(classBlock != null) {
+            for (SPMember member : classBlock) {
+                ((SPAST) member).codegen(output);
+            }
         }
 
         if (staticFieldInitializations.size() > 0) {

@@ -54,24 +54,30 @@ class SPCompilationUnit extends SPAST {
         context.addType(0, Type.OBJECT);
         context.addType(0, Type.STRING);
 
-        for (TypeName imported : imports) {
-            try {
-                Class<?> classRep = Class.forName(imported.toString());
-                context.addType(imported.line(), Type.typeFor(classRep));
-            } catch (Exception e) {
-                SPAST.compilationUnit.reportSemanticError(imported.line(),
-                        "Unable to find %s", imported.toString());
+        if(imports != null) {
+            for (TypeName imported : imports) {
+                try {
+                    Class<?> classRep = Class.forName(imported.toString());
+                    context.addType(imported.line(), Type.typeFor(classRep));
+                } catch (Exception e) {
+                    SPAST.compilationUnit.reportSemanticError(imported.line(),
+                            "Unable to find %s", imported.toString());
+                }
             }
         }
 
         CLEmitter.initializeByteClassLoader();
-        for (SPAST typeDeclaration : typeDeclarations) {
-            ((SPTypeDecl) typeDeclaration).declareThisType(context);
+        if(typeDeclarations != null) {
+            for (SPAST typeDeclaration : typeDeclarations) {
+                ((SPTypeDecl) typeDeclaration).declareThisType(context);
+            }
         }
 
         CLEmitter.initializeByteClassLoader();
-        for (SPAST typeDeclaration : typeDeclarations) {
-            ((SPTypeDecl) typeDeclaration).preAnalyze(context);
+        if(typeDeclarations != null) {
+            for (SPAST typeDeclaration : typeDeclarations) {
+                ((SPTypeDecl) typeDeclaration).preAnalyze(context);
+            }
         }
     }
 
