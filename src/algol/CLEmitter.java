@@ -340,7 +340,7 @@ public class CLEmitter {
                             return validInternalForm(descriptor.substring(1,
                                     descriptor.length() - 1));
                         }
-                        return false;
+                        return descriptor.length() == 1;
                     case '[':
                         return validTypeDescriptor(descriptor.substring(1));
                 }

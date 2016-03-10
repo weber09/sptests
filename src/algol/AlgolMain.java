@@ -9,7 +9,7 @@ public class AlgolMain {
 
     public static void main(String[] args)
     {
-        String program = "algoritmo \"meualgoritmo\" var a : inteiro inicio fimalgoritmo";
+        String program = "algoritmo \"soma\" var a, b, c : inteiro inicio a <- 2 b <- 3 c <- a + b fimalgoritmo";
 
         compile(program.getBytes());
     }
@@ -25,7 +25,6 @@ public class AlgolMain {
         }
         catch(ParseException exception)
         {
-
         }
 
         ast.preAnalyze();

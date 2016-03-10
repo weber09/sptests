@@ -78,9 +78,12 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
 
         CLEmitter partial = new CLEmitter(false);
 
-        String qualifiedName = SPAST.compilationUnit.packageName() == "" ? name
-                : SPAST.compilationUnit.packageName() + "/" + name;
+        String qualifiedName = SPAST.compilationUnit.packageName() == "" ? name : SPAST.compilationUnit.packageName() + "/" + name;
         partial.addClass(mods, qualifiedName, superType.jvmName(), null, false);
+
+        for (SPMember member : classBlock) {
+            member.preAnalyze(this.context, partial);
+        }
 
         if (!hasExplicitConstructor) {
             codegenPartialImplicitConstructor(partial);

@@ -18,9 +18,13 @@ class Type {
 
     public final static Type INT = typeFor(int.class);
 
+    public final static Type LONG = typeFor(long.class);
+
     public final static Type CHAR = typeFor(char.class);
 
     public final static Type BOOLEAN = typeFor(boolean.class);
+
+    public final static Type DECIMAL = typeFor(double.class);
 
     public final static Type BOXED_INT = typeFor(java.lang.Integer.class);
 
@@ -197,7 +201,8 @@ class Type {
                 : cls.isArray() ? "[" + descriptorFor(cls.getComponentType())
                 : cls.isPrimitive() ? (cls == int.class ? "I"
                 : cls == char.class ? "C"
-                : cls == boolean.class ? "Z" : "?")
+                : cls == boolean.class ? "Z"
+                : cls == long.class ? "L" : "?")
                 : "L" + cls.getName().replace('.', '/') + ";";
     }
 
