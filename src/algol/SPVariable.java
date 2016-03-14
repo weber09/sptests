@@ -206,7 +206,7 @@ class SPThis extends SPExpression {
     }
 
     public void codegen(CLEmitter output) {
-        output.addNoArgInstruction(ALOAD_0);
+        //output.addNoArgInstruction(ALOAD_0);
     }
 
 }

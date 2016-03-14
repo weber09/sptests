@@ -91,9 +91,9 @@ class SPFieldSelection extends SPExpression implements SPLhs {
     }
 
     public void codegenLoadLhsLvalue(CLEmitter output) {
-        // Nothing to do for static fields.
-            // Just load the target
+        if (!field.isStatic()) {
             target.codegen(output);
+        }
     }
 
     public void codegenLoadLhsRvalue(CLEmitter output) {

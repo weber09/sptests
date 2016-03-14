@@ -62,7 +62,7 @@ public class AlgolParser implements AlgolParserConstants {
 
     ArrayList<SPMember> classBody = new ArrayList<>();
 
-    ArrayList<String> mods = new ArrayList<>(Arrays.asList("public"));
+    ArrayList<String> mods = new ArrayList<>(Arrays.asList("public", "static"));
 
     SPFieldDeclaration fields = new SPFieldDeclaration( line, mods, variables );
 
@@ -102,9 +102,21 @@ public class AlgolParser implements AlgolParserConstants {
 
     jj_consume_token(FIMALGORITMO);
 
+    mods = new ArrayList<>(Arrays.asList("public", "static"));
+
+    ArrayList<SPFormalParameter> formalParameters = new ArrayList<>();
+
+    String[] methodArgs = new String[1];
+
+    Type methodArgsType = Type.typeFor(methodArgs.getClass());
+
+    SPFormalParameter formalParameter = new SPFormalParameter(line, "args", methodArgsType);
+
+    formalParameters.add(formalParameter);
+
     SPMember memberDecl =
-            new SPMethodDeclaration( line, mods, "inicio",
-                    Type.VOID, new ArrayList<>(), body );
+            new SPMethodDeclaration( line, mods, "main",
+                    Type.VOID, formalParameters, body );
 
     classBody.add(memberDecl);
 
