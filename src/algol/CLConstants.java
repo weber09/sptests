@@ -12,7 +12,7 @@ public class CLConstants {
     public static final long MAGIC = 3405691582L;
 
     /** Major version for the class files that j-- compiles. */
-    public static final int MAJOR_VERSION = 49;
+    public static final int MAJOR_VERSION = 52;
 
     /** Minor version for the class files that j-- compiles. */
     public static final int MINOR_VERSION = 0;
