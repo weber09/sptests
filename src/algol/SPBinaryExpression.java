@@ -52,6 +52,9 @@ class SPPlusOp extends SPBinaryExpression {
         if(type != Type.DECIMAL)
             return;
 
+        if(exp.type() == Type.DECIMAL)
+            return;
+
         int convertOpCode = I2D;
         if(exp.type() == Type.LONG)
             convertOpCode = L2D;
