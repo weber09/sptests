@@ -125,8 +125,6 @@ public class AlgolParser implements AlgolParserConstants {
     typeDeclarations.add(aClass);
 
     return new SPCompilationUnit(fileName, line, null, null, typeDeclarations);
-
-    //return new JCompilationUnit( fileName, line, packageName, imports, typeDeclarations );
   }
 
   static final private SPAST typeDeclaration(String name, ArrayList<SPMember> classBody) throws ParseException {
@@ -727,6 +725,7 @@ public class AlgolParser implements AlgolParserConstants {
       }
     case FLOATING_POINT_LITERAL:{
       jj_consume_token(FLOATING_POINT_LITERAL);
+      expr = new SPLiteralDecimal(token.beginLine,token.image);
       break;
       }
     case CHARACTER_LITERAL:{
