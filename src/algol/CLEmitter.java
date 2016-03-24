@@ -787,6 +787,23 @@ public class CLEmitter {
         }
     }
 
+    public void addOneArgInstruction(int opcode,double arg) {
+        CLInstruction instr = null;
+        boolean isWidened = false;
+        switch (CLInstruction.instructionInfo[opcode].category) {
+            case LOAD_STORE4:
+                instr = new CLLoadStoreInstruction(opcode, mPC++, arg);
+                break;
+            default:
+                reportOpcodeError(opcode);
+        }
+        if (instr != null) {
+            mPC += instr.operandCount();
+            mCode.add(instr);
+            mInstructionAfterLabel = true;
+        }
+    }
+
     public void addIINCInstruction(int index, int constVal) {
         boolean isWidened = index > 255 || constVal < Byte.MIN_VALUE
                 || constVal > Byte.MAX_VALUE;
