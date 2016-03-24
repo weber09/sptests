@@ -202,7 +202,8 @@ class Type {
                 : cls.isPrimitive() ? (cls == int.class ? "I"
                 : cls == char.class ? "C"
                 : cls == boolean.class ? "Z"
-                : cls == long.class ? "L" : "?")
+                : cls == long.class ? "L"
+                : cls == double.class ? "D" : "?")
                 : "L" + cls.getName().replace('.', '/') + ";";
     }
 
