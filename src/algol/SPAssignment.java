@@ -4,7 +4,7 @@ package algol;
  * Created by Gabriel on 08/03/2016.
  */
 
-        import static algol.CLConstants.*;
+import static algol.CLConstants.*;
 
 abstract class SPAssignment extends SPBinaryExpression {
 
@@ -12,11 +12,9 @@ abstract class SPAssignment extends SPBinaryExpression {
 
     abstract void setRhs(SPExpression rhs);
 
-    public SPAssignment(int line, String operator, SPExpression lhs,
-                       SPExpression rhs) {
-        super(line, operator, lhs, rhs);
+    public SPAssignment(int line, SPExpression lhs, SPExpression rhs) {
+        super(line, lhs, rhs);
     }
-
 }
 
 class SPAssignOp extends SPAssignment {
@@ -32,18 +30,33 @@ class SPAssignOp extends SPAssignment {
     }
 
     public SPAssignOp(int line, SPExpression lhs, SPExpression rhs) {
-        super(line, "=", lhs, rhs);
+        super(line, lhs, rhs);
+    }
+
+    private boolean mustMatchTypes(){
+
+        if(rhs.type().matchesExpected(lhs.type())) {
+            return true;
+        }
+
+        if(lhs.type() == Type.DECIMAL && (rhs.type() == Type.LONG || rhs.type() == Type.INT))
+            return true;
+
+       return lhs.type() == Type.LONG && rhs.type() == Type.INT;
     }
 
     public SPExpression analyze(Context context) {
         if (!(lhs instanceof SPLhs)) {
-            SPAST.compilationUnit.reportSemanticError(line(),
-                    "Illegal lhs for assignment");
+            SPAST.compilationUnit.reportSemanticError(line(), "Illegal lhs for assignment");
         } else {
-            lhs = (SPExpression) ((SPLhs) lhs).analyzeLhs(context);
+            lhs = ((SPLhs) lhs).analyzeLhs(context);
         }
-        rhs = (SPExpression) rhs.analyze(context);
-        rhs.type().mustMatchExpected(line(), lhs.type());
+        rhs = rhs.analyze(context);
+
+        if(!mustMatchTypes()){
+            SPAST.compilationUnit.reportSemanticError(line, "Type %s doesn't match type %s", this, lhs.type());
+        }
+
         type = rhs.type();
         /*if (lhs instanceof SPVariable) {
             IDefn defn = ((SPVariable) lhs).iDefn();
@@ -62,6 +75,16 @@ class SPAssignOp extends SPAssignment {
             // Generate code to leave the Rvalue atop stack
             ((SPLhs) lhs).codegenDuplicateRvalue(output);
         }
+
+        if(lhs.type() == Type.DECIMAL){
+            if(rhs.type() == Type.INT)
+                output.addNoArgInstruction(I2D);
+            else if(rhs.type() == Type.LONG)
+                output.addNoArgInstruction(L2D);
+        } else if(lhs.type() == Type.LONG) {
+            output.addNoArgInstruction(I2L);
+        }
+
         ((SPLhs) lhs).codegenStore(output);
     }
 
@@ -80,7 +103,7 @@ class SPPlusAssignOp extends SPAssignment {
     }
 
     public SPPlusAssignOp(int line, SPExpression lhs, SPExpression rhs) {
-        super(line, "+=", lhs, rhs);
+        super(line, lhs, rhs);
     }
 
     /**
