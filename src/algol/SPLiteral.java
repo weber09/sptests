@@ -61,6 +61,22 @@ class SPLiteralInt extends SPLiteral {
     }
 }
 
+class SPLiteralDecimal extends SPLiteral{
+    public SPLiteralDecimal(int line, String text) {
+        super(line, text);
+    }
+
+    public SPExpression analyze(Context context) {
+        type = Type.DECIMAL;
+        return this;
+    }
+
+    public void codegen(CLEmitter output) {
+        output.addLDCInstruction(Double.parseDouble(text));
+    }
+
+}
+
 class SPLiteralTrue extends SPLiteral {
 
     public SPLiteralTrue(int line) {
