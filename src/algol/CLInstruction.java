@@ -303,6 +303,26 @@ abstract class CLInstruction {
         return j;
     }
 
+    protected int byteAt(double i, int byteNum){
+        long l = Double.doubleToLongBits(i);
+        int j = 0, mask = 0xFF;
+        switch (byteNum) {
+            case 1: // lower order
+                j = (int)l & mask;
+                break;
+            case 2:
+                j = ((int)l >> 8) & mask;
+                break;
+            case 3:
+                j = ((int)l >> 16) & mask;
+                break;
+            case 4: // higher order
+                j = ((int)l >> 24) & mask;
+                break;
+        }
+        return j;
+    }
+
 }
 
 class CLObjectInstruction extends CLInstruction {
@@ -783,8 +803,10 @@ class CLLoadStoreInstruction extends CLInstruction {
 
     private boolean isWidened;
 
-    private int constVal;
+    private Type type;
 
+    private int constValI;
+    private double constValD;
 
     public CLLoadStoreInstruction(int opcode, int pc) {
         super.opcode = opcode;
@@ -793,6 +815,7 @@ class CLLoadStoreInstruction extends CLInstruction {
         operandCount = instructionInfo[opcode].operandCount;
         stackUnits = instructionInfo[opcode].stackUnits;
         localVariableIndex = instructionInfo[opcode].localVariableIndex;
+        this.type = Type.INT;
     }
 
     public CLLoadStoreInstruction(int opcode, int pc, int localVariableIndex,
@@ -804,6 +827,7 @@ class CLLoadStoreInstruction extends CLInstruction {
         stackUnits = instructionInfo[opcode].stackUnits;
         super.localVariableIndex = localVariableIndex;
         this.isWidened = isWidened;
+        this.type = Type.INT;
     }
 
     public CLLoadStoreInstruction(int opcode, int pc, int constVal) {
@@ -813,9 +837,21 @@ class CLLoadStoreInstruction extends CLInstruction {
         operandCount = instructionInfo[opcode].operandCount;
         stackUnits = instructionInfo[opcode].stackUnits;
         localVariableIndex = instructionInfo[opcode].localVariableIndex;
-        this.constVal = constVal;
+        this.constValI = constVal;
+        this.type = Type.INT;
     }
 
+
+    public CLLoadStoreInstruction(int opcode, int pc, double constVal){
+        super.opcode = opcode;
+        super.pc = pc;
+        mnemonic = instructionInfo[opcode].mnemonic;
+        operandCount = instructionInfo[opcode].operandCount;
+        stackUnits = instructionInfo[opcode].stackUnits;
+        localVariableIndex = instructionInfo[opcode].localVariableIndex;
+        this.constValD = constVal;
+        this.type = Type.DECIMAL;
+    }
 
     public ArrayList<Integer> toBytes() {
         ArrayList<Integer> bytes = new ArrayList<Integer>();
@@ -830,13 +866,19 @@ class CLLoadStoreInstruction extends CLInstruction {
                 switch (opcode) {
                     case BIPUSH:
                     case LDC:
-                        bytes.add(byteAt(constVal, 1));
+                        bytes.add(byteAt(constValI, 1));
                         break;
                     case SIPUSH:
                     case LDC_W:
                     case LDC2_W:
-                        bytes.add(byteAt(constVal, 2));
-                        bytes.add(byteAt(constVal, 1));
+                        if(this.type == Type.INT) {
+                            bytes.add(byteAt(constValI, 2));
+                            bytes.add(byteAt(constValI, 1));
+                        }
+                        else if(this.type == Type.DECIMAL) {
+                            bytes.add(byteAt(constValD, 2));
+                            bytes.add(byteAt(constValD, 1));
+                        }
                 }
             }
         }
