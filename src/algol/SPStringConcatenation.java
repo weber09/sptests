@@ -8,7 +8,7 @@ import static algol.CLConstants.*;
 class SPStringConcatenationOp extends SPBinaryExpression {
 
     public SPStringConcatenationOp(int line, SPExpression lhs, SPExpression rhs) {
-        super(line, "+", lhs, rhs);
+        super(line, lhs, rhs);
     }
 
 
