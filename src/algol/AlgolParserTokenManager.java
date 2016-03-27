@@ -12,7 +12,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    public static  java.io.PrintStream debugStream = System.out;
    /** Set debug output. */
    public static  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
-   private static final int jjStopStringLiteralDfa_0(int pos, long active0, long active1){
+   private static int jjStopStringLiteralDfa_0(int pos, long active0, long active1){
       switch (pos)
       {
          case 0:
@@ -145,7 +145,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
             return -1;
       }
    }
-   private static final int jjStartNfa_0(int pos, long active0, long active1){
+   private static int jjStartNfa_0(int pos, long active0, long active1){
       return jjMoveNfa_0(jjStopStringLiteralDfa_0(pos, active0, active1), pos + 1);
    }
    static private int jjStopAtPos(int pos, int kind)
@@ -732,7 +732,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
       catch(java.io.IOException e) { return pos + 1; }
       return jjMoveNfa_0(state, pos + 1);
    }
-   static final long[] jjbitVec0 = {
+   static long[] jjbitVec0 = {
            0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL
    };
    static private int jjMoveNfa_0(int startState, int curPos)
@@ -1186,14 +1186,14 @@ package algol;/* algol.AlgolParserTokenManager.java */
       }
       return 2;
    }
-   static final int[] jjnextStates = {
+   static int[] jjnextStates = {
            31, 32, 33, 38, 39, 42, 43, 9, 20, 21, 23, 11, 13, 5, 6, 9,
            20, 21, 25, 23, 34, 35, 9, 42, 43, 9, 7, 8, 14, 15, 17, 22,
            24, 26, 36, 37, 40, 41, 44, 45,
    };
 
    /** Token literal values. */
-   public static final String[] jjstrLiteralImages = {
+   public static String[] jjstrLiteralImages = {
            "", null, null, null, null, null, null, null, null, null, null, null, null,
            "\141\154\147\157\162\151\164\155\157", "\166\141\162", "\151\156\151\143\151\157",
            "\146\151\155\141\154\147\157\162\151\164\155\157", "\151\156\164\145\151\162\157", "\154\157\147\151\143\157",
@@ -1247,7 +1247,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    static int jjmatchedKind;
 
    /** Get the next Token. */
-   public static Token getNextToken()
+   public Token getNextToken()
    {
       Token specialToken = null;
       Token matchedToken;
@@ -1446,7 +1446,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    }
 
    /** Reinitialise parser. */
-   static public void ReInit(SimpleCharStream stream)
+   public void ReInit(SimpleCharStream stream)
    {
       jjmatchedPos = jjnewStateCnt = 0;
       curLexState = defaultLexState;
@@ -1463,7 +1463,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    }
 
    /** Reinitialise parser. */
-   static public void ReInit(SimpleCharStream stream, int lexState)
+   public void ReInit(SimpleCharStream stream, int lexState)
    {
       ReInit(stream);
       SwitchTo(lexState);
@@ -1479,7 +1479,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    }
 
    /** Lexer state names. */
-   public static final String[] lexStateNames = {
+   public static String[] lexStateNames = {
            "DEFAULT",
            "IN_SINGLE_LINE_COMMENT",
            "IN_FORMAL_COMMENT",
@@ -1487,22 +1487,22 @@ package algol;/* algol.AlgolParserTokenManager.java */
    };
 
    /** Lex State array. */
-   public static final int[] jjnewLexState = {
+   public static int[] jjnewLexState = {
            -1, -1, -1, -1, -1, -1, 1, 2, 3, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
    };
-   static final long[] jjtoToken = {
+   static long[] jjtoToken = {
            0xfff7ffffffffe001L, 0x19ffffffL,
    };
-   static final long[] jjtoSkip = {
+   static long[] jjtoSkip = {
            0xe3eL, 0x0L,
    };
-   static final long[] jjtoSpecial = {
+   static long[] jjtoSpecial = {
            0xe00L, 0x0L,
    };
-   static final long[] jjtoMore = {
+   static long[] jjtoMore = {
            0x11c0L, 0x0L,
    };
    static protected SimpleCharStream  input_stream;
@@ -1510,7 +1510,7 @@ package algol;/* algol.AlgolParserTokenManager.java */
    static private final int[] jjrounds = new int[46];
    static private final int[] jjstateSet = new int[2 * 46];
 
-   private static final StringBuilder jjimage = new StringBuilder();
+   private static StringBuilder jjimage = new StringBuilder();
    private static StringBuilder image = jjimage;
    private static int jjimageLen;
    private static int lengthOfMatch;
