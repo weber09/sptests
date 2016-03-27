@@ -170,16 +170,39 @@ public class AlgolParser implements AlgolParserConstants {
         case VETOR:{
 
             int line = token.beginLine;
+            ArrayList<SPExpression> dimensionsBounds = new ArrayList<>();
 
             jj_consume_token(VETOR);
             jj_consume_token(LBRACKET);
+            jj_consume_token(INTEGER_LITERAL);
 
-            SPExpression lowerBound = AdditiveExpression();
+            SPExpression lowerBound =  new SPLiteralInt(token.beginLine, token.image);
 
-            jj_consume_token(DOT);
-            jj_consume_token(DOT);
+            jj_consume_token(DOUBLEDOT);
 
-            SPExpression upperBound = AdditiveExpression();
+            jj_consume_token(INTEGER_LITERAL);
+
+            SPExpression upperBound = new SPLiteralInt(token.beginLine, token.image);
+
+            SPExpression dimensionBounds = new SPPlusOp(token.beginLine, new SPSubtractOp(token.beginLine, upperBound, lowerBound), new SPLiteralInt(token.beginLine, "1"));
+            dimensionsBounds.add(dimensionBounds);
+
+            switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+                case COMMA:{
+                    jj_consume_token(COMMA);
+                    jj_consume_token(INTEGER_LITERAL);
+                    lowerBound = new SPLiteralInt(token.beginLine, token.image);
+                    jj_consume_token(DOUBLEDOT);
+                    jj_consume_token(INTEGER_LITERAL);
+                    upperBound = new SPLiteralInt(token.beginLine, token.image);
+                    dimensionBounds = new SPPlusOp(token.beginLine, new SPSubtractOp(token.beginLine, upperBound, lowerBound), new SPLiteralInt(token.beginLine, "1"));
+                    dimensionsBounds.add(dimensionBounds);
+                    break;
+                }
+                default:
+                    jj_la1[2] = jj_gen;
+                    ;
+            }
 
             jj_consume_token(RBRACKET);
 
@@ -189,13 +212,12 @@ public class AlgolParser implements AlgolParserConstants {
 
             type = new ArrayTypeName(type);
 
-            SPNewArrayOp newArray = new SPNewArrayOp(line, type, new ArrayList<>(Arrays.asList(new SPSubtractOp(line, upperBound, lowerBound))));
+            SPNewArrayOp newArray = new SPNewArrayOp(line, type, dimensionsBounds);
 
             for(SPVariableDeclarator variable : typeVariables)
             {
                 variable.setType(type);
                 variables.add(variable);
-
 
                 SPExpression lhs = new SPVariable(variable.line(), variable.getName());
 
@@ -1219,105 +1241,121 @@ public class AlgolParser implements AlgolParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_28()
- {
-    if (jj_3R_31()) return true;
+  static private boolean jj_3R_26()
+  {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_30()
+  {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(73)) {
+      jj_scanpos = xsp;
+      if (jj_scan_token(74)) return true;
+    }
+    if (jj_3R_27()) return true;
     return false;
   }
 
   static private boolean jj_3R_27()
- {
+  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(73)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(74)) return true;
+    if (jj_3R_30()) {
+      jj_scanpos = xsp;
+      if (jj_3R_31()) return true;
     }
-    if (jj_3R_24()) return true;
     return false;
   }
 
   static private boolean jj_3R_24()
- {
+  {
+    if (jj_3R_27()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_27()) {
-    jj_scanpos = xsp;
-    if (jj_3R_28()) return true;
-    }
+    if (jj_3R_46()) jj_scanpos = xsp;
     return false;
   }
 
-  static private boolean jj_3R_22()
- {
-    if (jj_3R_24()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_42()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_37()
- {
+  static private boolean jj_3R_41()
+  {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(65)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(64)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(67)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(68)) return true;
-    }
-    }
+      jj_scanpos = xsp;
+      if (jj_scan_token(64)) {
+        jj_scanpos = xsp;
+        if (jj_scan_token(67)) {
+
+          jj_scanpos = xsp;
+          if (jj_scan_token(68)) return true;
+
+
+
+        }
+      }
     }
     return false;
   }
 
-  static private boolean jj_3R_33()
- {
+  static private boolean jj_3R_36()
+  {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(66)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(92)) return true;
+
+      jj_scanpos = xsp;
+      if (jj_scan_token(92)) return true;
     }
     return false;
   }
 
   static private boolean jj_3_1()
- {
+  {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_scan_token(88)) return true;
+    if (jj_3R_19()) return true;
     return false;
   }
 
-  static private boolean jj_3R_19()
- {
-    if (jj_3R_22()) return true;
+  static private boolean jj_3R_21()
+  {
+    if (jj_3R_24()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_40()) { jj_scanpos = xsp; break; }
+      if (jj_3R_44()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  static private boolean jj_3R_26()
- {
+  static private boolean jj_3R_19()
+  {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_26()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_29()
+  {
     if (jj_scan_token(SC_OR)) return true;
     return false;
   }
 
-  static private boolean jj_3R_30()
- {
+  static private boolean jj_3R_33()
+  {
     if (jj_scan_token(SC_AND)) return true;
     return false;
   }
 
-  static private boolean jj_3R_36()
- {
-    if (jj_3R_19()) return true;
+  static private boolean jj_3R_40()
+  {
+    if (jj_3R_21()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -1326,19 +1364,30 @@ public class AlgolParser implements AlgolParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_32()
- {
-    if (jj_3R_36()) return true;
+  static private boolean jj_3R_35()
+  {
+    if (jj_3R_40()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_37()) { jj_scanpos = xsp; break; }
+      if (jj_3R_41()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  static private boolean jj_3R_29()
- {
+  static private boolean jj_3R_32()
+  {
+    if (jj_3R_35()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_36()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_28()
+  {
     if (jj_3R_32()) return true;
     Token xsp;
     while (true) {
@@ -1349,190 +1398,196 @@ public class AlgolParser implements AlgolParserConstants {
   }
 
   static private boolean jj_3R_25()
- {
-    if (jj_3R_29()) return true;
+  {
+    if (jj_3R_28()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_30()) { jj_scanpos = xsp; break; }
+      if (jj_3R_29()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  static private boolean jj_3R_23()
- {
+  static private boolean jj_3R_22()
+  {
     if (jj_3R_25()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_23()
+  {
     Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_26()) { jj_scanpos = xsp; break; }
+    xsp = jj_scanpos;
+    if (jj_scan_token(63)) {
+
+
+
+      jj_scanpos = xsp;
+      if (jj_scan_token(82)) {
+        jj_scanpos = xsp;
+        if (jj_scan_token(83)) {
+
+          jj_scanpos = xsp;
+          if (jj_scan_token(87)) {
+
+            jj_scanpos = xsp;
+            if (jj_scan_token(80)) {
+              jj_scanpos = xsp;
+              if (jj_scan_token(81)) {
+                jj_scanpos = xsp;
+                if (jj_scan_token(84)) {
+
+                  jj_scanpos = xsp;
+                  if (jj_scan_token(86)) {
+
+                    jj_scanpos = xsp;
+                    if (jj_scan_token(85)) return true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
     return false;
   }
 
   static private boolean jj_3R_20()
- {
+  {
+    if (jj_3R_19()) return true;
     if (jj_3R_23()) return true;
     return false;
   }
 
-  static private boolean jj_3R_21()
- {
+  static private boolean jj_3R_45()
+  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(63)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(82)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(83)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(87)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(80)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(81)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(84)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(86)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(85)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
+    if (jj_scan_token(22)) {
+      jj_scanpos = xsp;
+      if (jj_scan_token(23)) return true;
     }
     return false;
   }
 
-  static private boolean jj_3R_18()
- {
-         if (jj_scan_token(IDENTIFIER)) return true;
-         Token xsp;
-         while (true) {
-             xsp = jj_scanpos;
-             if (jj_scan_token(LBRACKET)) { jj_scanpos = xsp; break; }
-         }
-    if (jj_3R_21()) return true;
+  static private boolean jj_3R_43()
+  {
+    if (jj_3R_45()) return true;
     return false;
   }
 
-  static private boolean jj_3R_41()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(23)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(24)) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_39()
- {
-    if (jj_3R_41()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_42()
- {
+  static private boolean jj_3R_46()
+  {
     if (jj_scan_token(XOR)) return true;
     return false;
   }
 
-  static private boolean jj_3R_35()
- {
-    if (jj_3R_38()) return true;
+  static private boolean jj_3R_39()
+  {
+    if (jj_3R_42()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_42()
+  {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(49)) {
+      jj_scanpos = xsp;
+      if (jj_scan_token(50)) {
+        jj_scanpos = xsp;
+        if (jj_scan_token(52)) {
+          jj_scanpos = xsp;
+          if (jj_scan_token(53)) {
+            jj_scanpos = xsp;
+            if (jj_3R_43()) return true;
+          }
+        }
+      }
+    }
     return false;
   }
 
   static private boolean jj_3R_38()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(50)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(51)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(53)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(54)) {
-    jj_scanpos = xsp;
-    if (jj_3R_39()) return true;
-    }
-    }
-    }
-    }
+  {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_22()) return true;
     return false;
   }
 
   static private boolean jj_3R_34()
- {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_31()
- {
+  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(88)) {
-    jj_scanpos = xsp;
-    if (jj_3R_34()) {
-    jj_scanpos = xsp;
-    if (jj_3R_35()) return true;
-    }
+    if (jj_3R_37()) {
+      jj_scanpos = xsp;
+      if (jj_3R_38()) {
+        jj_scanpos = xsp;
+        if (jj_3R_39()) return true;
+      }
     }
     return false;
   }
 
-  static private boolean jj_3_4()
- {
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_3()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(73)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(74)) return true;
-    }
+  static private boolean jj_3R_37()
+  {
     if (jj_3R_19()) return true;
     return false;
   }
 
-  static private boolean jj_3R_40()
- {
+  static private boolean jj_3_4()
+  {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_3()
+  {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(73)) {
+      jj_scanpos = xsp;
+      if (jj_scan_token(74)) return true;
+    }
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_44()
+  {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(75)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(76)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(79)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(77)) return true;
-    }
-    }
+
+      jj_scanpos = xsp;
+      if (jj_scan_token(76)) {
+
+        jj_scanpos = xsp;
+        if (jj_scan_token(79)) {
+
+          jj_scanpos = xsp;
+          if (jj_scan_token(77)) return true;
+        }
+      }
     }
     return false;
   }
 
   static private boolean jj_3_2()
- {
-    if (jj_3R_18()) return true;
+  {
+    if (jj_3R_20()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_31()
+  {
+    if (jj_3R_34()) return true;
     return false;
   }
 
   static private boolean jj_initialized_once = false;
-  /** Generated algol.Token Manager. */
+  /** Generated Token Manager. */
   static public AlgolParserTokenManager token_source;
   static SimpleCharStream jj_input_stream;
   /** Current token. */
@@ -1543,31 +1598,32 @@ public class AlgolParser implements AlgolParserConstants {
   static private Token jj_scanpos, jj_lastpos;
   static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[35];
+  static final private int[] jj_la1 = new int[38];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
   static {
-      jj_la1_init_0();
-      jj_la1_init_1();
-      jj_la1_init_2();
-   }
-   private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x3e000000,0x0,0xe0000,0x3e000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1800000,0x1800000,0x1800000,0x1800000,0x0,0x3e000000,0x0,0x3e000000,0x3e000000,0x0,0x3e000000,0x3e000000,0x3e000000,0x6000000,0x1800000,0x0,0x1800000,0x1800000,0x18000000,};
-   }
-   private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x1284a,0x0,0x8000,0x1284a,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xec0000,0xec0000,0x6c0000,0x0,0x1400,0x1284a,0x1400,0x1284a,0x1284a,0x1,0x1284a,0x1284a,0x1284a,0x0,0x6c0000,0x20000000,0x6c0000,0x6c0000,0x0,};
-   }
-   private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x1000000,0x1000000,0x0,0x0,0xff0000,0x20,0x40,0x10000004,0x10000004,0x1b,0x1b,0x600,0xb800,0xb800,0x4000,0x600,0x1000600,0x1000000,0x0,0x0,0x0,0x1000000,0x0,0x1000000,0x1000000,0x0,0x1000000,0x1000000,0x1000000,0x0,0x1000000,0x0,0x1000000,0x1000000,0x0,};
-   }
+    jj_la1_init_0();
+    jj_la1_init_1();
+    jj_la1_init_2();
+  }
+  private static void jj_la1_init_0() {
+    jj_la1_0 = new int[] {0x1f000000,0x0,0x0,0x100000,0x0,0xe0000,0x1f000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xc00000,0xc00000,0xc00000,0xc00000,0x0,0x1f000000,0x0,0x1f000000,0x1f000000,0x80000000,0x1f000000,0x1f000000,0x1f000000,0x3000000,0xc00000,0x0,0xc00000,0xc00000,0xc000000,};
+  }
+  private static void jj_la1_init_1() {
+    jj_la1_1 = new int[] {0x9425,0x0,0x10000000,0x0,0x4000000,0x4000,0x9425,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x760000,0x760000,0x360000,0x0,0xa00,0x9425,0xa00,0x9425,0x9425,0x0,0x9425,0x9425,0x9425,0x0,0x360000,0x10000000,0x360000,0x360000,0x0,};
+  }
+  private static void jj_la1_init_2() {
+    jj_la1_2 = new int[] {0x1000000,0x1000000,0x0,0x0,0x0,0x0,0x0,0xff0000,0x20,0x40,0x10000004,0x10000004,0x1b,0x1b,0x600,0xb800,0xb800,0x4000,0x600,0x1000600,0x1000000,0x0,0x0,0x0,0x1000000,0x0,0x1000000,0x1000000,0x0,0x1000000,0x1000000,0x1000000,0x0,0x1000000,0x0,0x1000000,0x1000000,0x0,};
+
+  }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public AlgolParser(java.io.InputStream stream) {
-     this(stream, null);
+    this(stream, null);
   }
   /** Constructor with InputStream and supplied encoding */
   public AlgolParser(java.io.InputStream stream, String encoding) {
@@ -1583,13 +1639,13 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
   static public void ReInit(java.io.InputStream stream) {
-     ReInit(stream, null);
+    ReInit(stream, null);
   }
   /** Reinitialise. */
   static public void ReInit(java.io.InputStream stream, String encoding) {
@@ -1598,7 +1654,7 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1616,7 +1672,7 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1627,11 +1683,11 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  /** Constructor with generated algol.Token Manager. */
+  /** Constructor with generated Token Manager. */
   public AlgolParser(AlgolParserTokenManager tm) {
     if (jj_initialized_once) {
       System.out.println("ERROR: Second call to constructor of static parser. ");
@@ -1644,7 +1700,7 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1654,7 +1710,7 @@ public class AlgolParser implements AlgolParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1707,7 +1763,7 @@ public class AlgolParser implements AlgolParserConstants {
   }
 
 
-/** Get the next algol.Token. */
+  /** Get the next Token. */
   static final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1716,7 +1772,7 @@ public class AlgolParser implements AlgolParserConstants {
     return token;
   }
 
-/** Get the specific algol.Token. */
+  /** Get the specific Token. */
   static final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -1764,7 +1820,7 @@ public class AlgolParser implements AlgolParserConstants {
     }
   }
 
-  /** Generate algol.ParseException. */
+  /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
     boolean[] la1tokens = new boolean[93];
@@ -1772,7 +1828,7 @@ public class AlgolParser implements AlgolParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < 38; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1815,20 +1871,20 @@ public class AlgolParser implements AlgolParserConstants {
   static private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 4; i++) {
-    try {
-      JJCalls p = jj_2_rtns[i];
-      do {
-        if (p.gen > jj_gen) {
-          jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
-          switch (i) {
-            case 0: jj_3_1(); break;
-            case 1: jj_3_2(); break;
-            case 2: jj_3_3(); break;
-            case 3: jj_3_4(); break;
+      try {
+        JJCalls p = jj_2_rtns[i];
+        do {
+          if (p.gen > jj_gen) {
+            jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
+            switch (i) {
+              case 0: jj_3_1(); break;
+              case 1: jj_3_2(); break;
+              case 2: jj_3_3(); break;
+              case 3: jj_3_4(); break;
+            }
           }
-        }
-        p = p.next;
-      } while (p != null);
+          p = p.next;
+        } while (p != null);
       } catch(LookaheadSuccess ls) { }
     }
     jj_rescan = false;
