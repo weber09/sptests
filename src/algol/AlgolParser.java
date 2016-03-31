@@ -97,8 +97,9 @@ public class AlgolParser implements AlgolParserConstants {
     ArrayList<String> mods = new ArrayList<>();
 
     mods.add( "public" );
+            mods.add("super");
 
-    return new SPClassDeclaration( 0, mods, name, Type.OBJECT, classBody/*classBody*/ );
+    return new SPClassDeclaration( 0, mods, name, Type.OBJECT, classBody );
   }
 
 /*VARIABLES DECLARATION BLOCK*/
@@ -287,19 +288,19 @@ public class AlgolParser implements AlgolParserConstants {
         break;
         }
       case SE:{
-        IfStatement();
+        statement = IfStatement();
         break;
         }
       case ENQUANTO:{
-        WhileStatement();
+        statement = WhileStatement();
         break;
         }
       case REPITA:{
-        DoStatement();
+        statement = DoStatement();
         break;
         }
       case PARA:{
-        ForStatement();
+        statement = ForStatement();
         break;
         }
       case PARAR:{
@@ -402,6 +403,7 @@ public class AlgolParser implements AlgolParserConstants {
 
   static  public SPExpression ConditionalOrExpression() throws ParseException {
     SPExpression lhs = ConditionalAndExpression();
+    int line = lhs.line();
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -413,7 +415,8 @@ public class AlgolParser implements AlgolParserConstants {
         break label_4;
       }
       jj_consume_token(SC_OR);
-      ConditionalAndExpression();
+      SPExpression rhs = ConditionalAndExpression();
+      lhs = new SPLogicalOrOp(line, lhs, rhs);
     }
 
     return lhs;
@@ -421,6 +424,7 @@ public class AlgolParser implements AlgolParserConstants {
 
   static  public SPExpression ConditionalAndExpression() throws ParseException {
     SPExpression lhs = EqualityExpression();
+    int line = lhs.line();
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -432,7 +436,8 @@ public class AlgolParser implements AlgolParserConstants {
         break label_5;
       }
       jj_consume_token(SC_AND);
-      EqualityExpression();
+      SPExpression rhs = EqualityExpression();
+      lhs = new SPLogicalAndOp(line, lhs, rhs);
     }
 
     return lhs;
@@ -440,6 +445,7 @@ public class AlgolParser implements AlgolParserConstants {
 
   static  public SPExpression EqualityExpression() throws ParseException {
     SPExpression lhs = RelationalExpression();
+    int line = lhs.line();
     label_6:
     while (true) {
       switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
@@ -454,10 +460,14 @@ public class AlgolParser implements AlgolParserConstants {
       switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
         case EQ: {
           jj_consume_token(EQ);
+          SPExpression rhs = RelationalExpression();
+          lhs = new SPEqualOp(line, lhs,rhs);
           break;
         }
         case 92: {
           jj_consume_token(92);
+          SPExpression rhs = RelationalExpression();
+          lhs = new SPNotEqualOp(line, lhs, rhs);
           break;
         }
         default:
@@ -473,6 +483,7 @@ public class AlgolParser implements AlgolParserConstants {
 
   static  public SPExpression RelationalExpression() throws ParseException {
     SPExpression lhs = AdditiveExpression();
+    int line = lhs.line();
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -489,18 +500,26 @@ public class AlgolParser implements AlgolParserConstants {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case LT:{
         jj_consume_token(LT);
+        SPExpression rhs = AdditiveExpression();
+        lhs = new SPLessThanOp(line, lhs, rhs);
         break;
         }
-      case GT:{
+      case GT: {
         jj_consume_token(GT);
+        SPExpression rhs = AdditiveExpression();
+        lhs = new SPGreaterThanOp(line, lhs, rhs);
         break;
-        }
+      }
       case LE:{
         jj_consume_token(LE);
+        SPExpression rhs = AdditiveExpression();
+        lhs = new SPLessEqualOp(line, lhs, rhs);
         break;
         }
       case GE:{
         jj_consume_token(GE);
+        SPExpression rhs = AdditiveExpression();
+        lhs = new SPGreaterEqualOp(line, lhs, rhs);
         break;
         }
       default:
@@ -508,7 +527,6 @@ public class AlgolParser implements AlgolParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-      AdditiveExpression();
     }
 
     return lhs;
@@ -855,10 +873,12 @@ public class AlgolParser implements AlgolParserConstants {
     }
   }
 
-  static public void IfStatement() throws ParseException {
+  static public SPStatement IfStatement() throws ParseException {
     jj_consume_token(SE);
-    Expression();
+    int line = token.beginLine;
+    SPExpression test = Expression();
     jj_consume_token(ENTAO);
+    SPStatement thenExpression = null;
     label_12:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -880,8 +900,9 @@ public class AlgolParser implements AlgolParserConstants {
         jj_la1[23] = jj_gen;
         break label_12;
       }
-      Statement();
+      thenExpression = Statement();
     }
+    SPStatement elseStatement = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case SENAO:{
       jj_consume_token(SENAO);
@@ -906,7 +927,7 @@ public class AlgolParser implements AlgolParserConstants {
           jj_la1[24] = jj_gen;
           break label_13;
         }
-        Statement();
+        elseStatement = Statement();
       }
       break;
       }
@@ -914,12 +935,16 @@ public class AlgolParser implements AlgolParserConstants {
       jj_la1[25] = jj_gen;
     }
     jj_consume_token(FIMSE);
+
+    return new SPIfStatement(line, test, thenExpression, elseStatement);
   }
 
-  static public void WhileStatement() throws ParseException {
+  static public SPStatement WhileStatement() throws ParseException {
     jj_consume_token(ENQUANTO);
-    Expression();
+    SPExpression condition = Expression();
+    int line = condition.line();
     jj_consume_token(FACA);
+    SPStatement body = null;
     label_14:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -941,13 +966,17 @@ public class AlgolParser implements AlgolParserConstants {
         jj_la1[26] = jj_gen;
         break label_14;
       }
-      Statement();
+      body = Statement();
     }
     jj_consume_token(FIMENQUANTO);
+
+    return new SPWhileStatement(line, condition, body);
   }
 
-  static public void DoStatement() throws ParseException {
+  static public SPStatement DoStatement() throws ParseException {
     jj_consume_token(REPITA);
+    int line = token.beginLine;
+    SPStatement body = null;
     label_15:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -969,20 +998,36 @@ public class AlgolParser implements AlgolParserConstants {
         jj_la1[27] = jj_gen;
         break label_15;
       }
-      Statement();
+      body = Statement();
     }
     jj_consume_token(ATE);
-    Expression();
+    SPExpression condition = Expression();
+    return new SPDoStatement(line, condition, body);
   }
 
-  static public void ForStatement() throws ParseException {
+  static public SPStatement ForStatement() throws ParseException {
     jj_consume_token(PARA);
+    int line = token.beginLine;
     jj_consume_token(IDENTIFIER);
+    SPExpression controlVariabel = new SPVariable(token.beginLine, token.image);
     jj_consume_token(DE);
-    Expression();
+    SPExpression controlInitialization = Expression();
+
+    SPExpression assignment = new SPAssignOp(line, controlVariabel, controlInitialization);
+    assignment.isStatementExpression = true;
+    SPStatementExpression controlVariableInitialization = new SPStatementExpression(line, assignment);
+
     jj_consume_token(ATE);
-    Expression();
+    SPExpression controlLimit = Expression();
+
+    SPExpression pace = new SPLiteralInt(line, "1");
+    if(((jj_ntk==-1)?jj_ntk_f():jj_ntk) == 93){
+      jj_consume_token(93);
+      pace = Expression();
+    }
+
     jj_consume_token(FACA);
+    SPStatement body = null;
     label_16:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1004,9 +1049,19 @@ public class AlgolParser implements AlgolParserConstants {
         jj_la1[28] = jj_gen;
         break label_16;
       }
-      Statement();
+      body = Statement();
     }
     jj_consume_token(FIMPARA);
+
+    SPExpression controlVariableInc = new SPPlusOp(line, controlVariabel, pace);
+    SPExpression assignControlVariableInc = new SPAssignOp(line, controlVariabel, controlVariableInc);
+    assignControlVariableInc.isStatementExpression = true;
+
+    SPStatement controlVariableIncStm = new SPStatementExpression(line, assignControlVariableInc);
+
+    SPExpression condition = new SPGreaterThanOp(line, controlVariabel, controlLimit);
+
+    return new SPForStatement(line, controlVariableInitialization, controlVariableIncStm, condition, body);
   }
 
   static public void BreakStatement() throws ParseException {
