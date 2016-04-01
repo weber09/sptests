@@ -113,16 +113,6 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
             }
         }
 
-        if (!thisType.isAbstract() && thisType.abstractMethods().size() > 0) {
-            String methods = "";
-            for (Method method : thisType.abstractMethods()) {
-                methods += "\n" + method;
-            }
-            SPAST.compilationUnit.reportSemanticError(line,
-                    "Class must be declared abstract since it defines "
-                            + "the following abstract methods: %s", methods);
-
-        }
         return this;
     }
 

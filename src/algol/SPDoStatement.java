@@ -34,7 +34,7 @@ class SPDoStatement extends SPStatement{
         // Codegen body
         body.codegen(output);
 
-        condition.codegen(output, out, false);
+        condition.codegen(output, out, true);
         output.addBranchInstruction(GOTO, loop);
 
         output.addLabel(out);

@@ -284,6 +284,7 @@ public interface AlgolParserConstants {
           "<DIGIT>",
           "\":\"",
           "\"!=\"",
+          "\"passo\""
   };
 
 }

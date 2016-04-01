@@ -30,6 +30,11 @@ public class AlgolParser implements AlgolParserConstants {
 
     ArrayList<String> mods = new ArrayList<>(Arrays.asList("public", "static"));
 
+      try{
+          variables.add(new SPVariableDeclarator(0, "sp_inner_scanner", Type.typeFor(Class.forName("java.util.Scanner"))));
+      }catch(ClassNotFoundException ex){
+      }
+
     SPFieldDeclaration fields = new SPFieldDeclaration( line, mods, variables );
 
     classBody.add(fields);
@@ -38,6 +43,7 @@ public class AlgolParser implements AlgolParserConstants {
 
     SPBlock body;
     ArrayList<SPStatement> statements = new ArrayList<>();
+      statements.add(new SPScannerDeclarator());
       statements.addAll(arrayInitializers);
     label_1:
     while (true) {
@@ -97,7 +103,7 @@ public class AlgolParser implements AlgolParserConstants {
     ArrayList<String> mods = new ArrayList<>();
 
     mods.add( "public" );
-            mods.add("super");
+    mods.add("super");
 
     return new SPClassDeclaration( 0, mods, name, Type.OBJECT, classBody );
   }
@@ -284,7 +290,7 @@ public class AlgolParser implements AlgolParserConstants {
     } else {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case ESCOLHA:{
-        SwitchStatement();
+        statement = SwitchStatement();
         break;
         }
       case SE:{
@@ -313,12 +319,12 @@ public class AlgolParser implements AlgolParserConstants {
         }
       case ESCREVA:
       case ESCREVAL:{
-        WriteStatement();
+        statement = WriteStatement();
         break;
         }
       case LEIA:
       case LEIAL:{
-        ReadStatement();
+        statement = ReadStatement();
         break;
         }
       default:
@@ -811,8 +817,9 @@ public class AlgolParser implements AlgolParserConstants {
     return expr;
   }
 
-  static  public void SwitchStatement() throws ParseException {
+  static  public SPStatement SwitchStatement() throws ParseException {
     jj_consume_token(ESCOLHA);
+    int line = token.beginLine;
     Expression();
     label_10:
     while (true) {
@@ -851,6 +858,7 @@ public class AlgolParser implements AlgolParserConstants {
       }
     }
     jj_consume_token(FIMESCOLHA);
+    return new SPSwitchStatement(line, null, null, null);
   }
 
   static  public void SwitchLabel() throws ParseException {
@@ -1018,12 +1026,12 @@ public class AlgolParser implements AlgolParserConstants {
     SPStatementExpression controlVariableInitialization = new SPStatementExpression(line, assignment);
 
     jj_consume_token(ATE);
-    SPExpression controlLimit = Expression();
+    SPExpression controlLimit = Expression(); //TODO: aviso de erro ao alterar a variavel do limite
 
     SPExpression pace = new SPLiteralInt(line, "1");
     if(((jj_ntk==-1)?jj_ntk_f():jj_ntk) == 93){
       jj_consume_token(93);
-      pace = Expression();
+      pace = Expression();//TODO: é constante
     }
 
     jj_consume_token(FACA);
@@ -1079,14 +1087,20 @@ public class AlgolParser implements AlgolParserConstants {
     }
   }
 
-  static public void WriteStatement() throws ParseException {
+  static public SPStatement WriteStatement() throws ParseException {
+    int line;
+    boolean printLine;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case ESCREVA:{
       jj_consume_token(ESCREVA);
+      line = token.beginLine;
+        printLine = false;
       break;
       }
     case ESCREVAL:{
       jj_consume_token(ESCREVAL);
+      line = token.beginLine;
+        printLine = true;
       break;
       }
     default:
@@ -1095,6 +1109,8 @@ public class AlgolParser implements AlgolParserConstants {
       throw new ParseException();
     }
     jj_consume_token(LPAREN);
+    ArrayList<SPExpression> printParams = new ArrayList<>();
+
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case VERDADEIRO:
     case FALSO:
@@ -1105,7 +1121,9 @@ public class AlgolParser implements AlgolParserConstants {
     case IDENTIFIER:{
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case IDENTIFIER:{
-        Name();
+        jj_consume_token(IDENTIFIER);
+        SPExpression param = new SPVariable(token.beginLine, token.image);
+        printParams.add(param);
         break;
         }
       case VERDADEIRO:
@@ -1114,7 +1132,8 @@ public class AlgolParser implements AlgolParserConstants {
       case FLOATING_POINT_LITERAL:
       case CHARACTER_LITERAL:
       case STRING_LITERAL:{
-        Literal();
+        SPExpression param = Literal();
+        printParams.add(param);
         break;
         }
       default:
@@ -1135,7 +1154,9 @@ public class AlgolParser implements AlgolParserConstants {
         jj_consume_token(COMMA);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case IDENTIFIER:{
-          Name();
+          jj_consume_token(IDENTIFIER);
+          SPExpression param = new SPVariable(token.beginLine, token.image);
+          printParams.add(param);
           break;
           }
         case VERDADEIRO:
@@ -1144,7 +1165,8 @@ public class AlgolParser implements AlgolParserConstants {
         case FLOATING_POINT_LITERAL:
         case CHARACTER_LITERAL:
         case STRING_LITERAL:{
-          Literal();
+          SPExpression param = Literal();
+          printParams.add(param);
           break;
           }
         default:
@@ -1159,12 +1181,17 @@ public class AlgolParser implements AlgolParserConstants {
       jj_la1[33] = jj_gen;
     }
     jj_consume_token(RPAREN);
+
+    return new SPWriteStatement(line, printLine, printParams);
   }
 
-  static public void ReadStatement() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+  static public SPStatement ReadStatement() throws ParseException {
+    int line = 0;
+
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case LEIA:{
       jj_consume_token(LEIA);
+        line = token.beginLine;
       break;
       }
     case LEIAL:{
@@ -1177,9 +1204,40 @@ public class AlgolParser implements AlgolParserConstants {
       throw new ParseException();
     }
     jj_consume_token(LPAREN);
-    NameList();
+
+      ArrayList<SPExpression> readParams = new ArrayList<>();
+      jj_consume_token(IDENTIFIER);
+      SPExpression param = new SPVariable(token.beginLine, token.image);
+      readParams.add(param);
+
+      label_out_of_read_params:
+      while (true) {
+          switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
+              case COMMA: {
+                  break;
+              }
+              default:
+                  jj_la1[31] = jj_gen;
+                  break label_out_of_read_params;
+          }
+          jj_consume_token(COMMA);
+          switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
+              case IDENTIFIER: {
+                  jj_consume_token(IDENTIFIER);
+                  param = new SPVariable(token.beginLine, token.image);
+                  readParams.add(param);
+                  break;
+              }
+              default:
+                  break label_out_of_read_params;
+          }
+      }
     jj_consume_token(RPAREN);
+
+      return new SPReadStatement(line, readParams, new SPVariable(line, "sp_inner_scanner"));
   }
+
+  //JAVACC PART
 
   static private boolean jj_2_1(int xla)
  {
