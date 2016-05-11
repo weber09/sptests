@@ -37,7 +37,7 @@ class SPWriteStatement extends SPStatement{
 
             String descriptor = param.type().toDescriptor();
             if(param.type().isArray()){
-                descriptor = ((ArrayTypeName)param.type()).getBaseType().toDescriptor();
+                descriptor = param.type().getBaseType().toDescriptor();
             }
 
             String methodSignature = String.format("(%s)V", descriptor);

@@ -36,12 +36,12 @@ class SPAssignOp extends SPAssignment {
     private boolean mustMatchTypes(){
         Type baseTypeLhs = lhs.type();
         if(lhs.type().isArray()){
-            baseTypeLhs =((ArrayTypeName)baseTypeLhs).getBaseType();
+                baseTypeLhs = baseTypeLhs.getBaseType();
         }
 
         Type baseTypeRhs = rhs.type();
         if(rhs.type().isArray()){
-            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+            baseTypeRhs = baseTypeRhs.getBaseType();
         }
 
         if(baseTypeRhs.matchesExpected(baseTypeLhs)) {
@@ -68,7 +68,7 @@ class SPAssignOp extends SPAssignment {
 
         Type baseTypeRhs = rhs.type();
         if(rhs.type().isArray()){
-            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+            baseTypeRhs = baseTypeRhs.getBaseType();
         }
 
         type = baseTypeRhs;
@@ -92,12 +92,12 @@ class SPAssignOp extends SPAssignment {
 
         Type baseType = lhs.type();
         if(baseType.isArray()){
-            baseType = ((ArrayTypeName)baseType).getBaseType();
+            baseType = baseType.getBaseType();
         }
 
         Type baseTypeRhs = rhs.type();
         if(baseTypeRhs.isArray()){
-            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+            baseTypeRhs = baseTypeRhs.getBaseType();
         }
 
         if(baseType == Type.DECIMAL){

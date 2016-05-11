@@ -32,12 +32,12 @@ class SPPlusOp extends SPBinaryExpression {
 
         Type baseLhsType = lhs.type();
         if(baseLhsType.isArray()){
-            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+            baseLhsType = baseLhsType.getBaseType();
         }
 
         Type baseRhsType = rhs.type();
         if(baseRhsType.isArray()){
-            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+            baseRhsType = baseRhsType.getBaseType();
         }
 
         if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
@@ -59,7 +59,7 @@ class SPPlusOp extends SPBinaryExpression {
     private void convert(CLEmitter output, SPExpression exp){
         Type baseType = type;
         if(baseType.isArray()){
-            baseType = ((ArrayTypeName)baseType).getBaseType();
+            baseType = baseType.getBaseType();
         }
 
         if(baseType != Type.DECIMAL)
@@ -67,7 +67,7 @@ class SPPlusOp extends SPBinaryExpression {
 
         Type expBaseType = exp.type();
         if(expBaseType.isArray()){
-            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+            expBaseType = expBaseType.getBaseType();
         }
 
         if(expBaseType == Type.DECIMAL)
@@ -107,12 +107,12 @@ class SPSubtractOp extends SPBinaryExpression {
 
         Type baseLhsType = lhs.type();
         if(baseLhsType.isArray()){
-            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+            baseLhsType = baseLhsType.getBaseType();
         }
 
         Type baseRhsType = rhs.type();
         if(baseRhsType.isArray()){
-            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+            baseRhsType = baseRhsType.getBaseType();
         }
 
         if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
@@ -134,7 +134,7 @@ class SPSubtractOp extends SPBinaryExpression {
     private void convert(CLEmitter output, SPExpression exp){
         Type baseType = type;
         if(baseType.isArray()){
-            baseType = ((ArrayTypeName)baseType).getBaseType();
+            baseType = baseType.getBaseType();
         }
 
         if(baseType != Type.DECIMAL)
@@ -142,7 +142,7 @@ class SPSubtractOp extends SPBinaryExpression {
 
         Type expBaseType = exp.type();
         if(expBaseType.isArray()){
-            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+            expBaseType = expBaseType.getBaseType();
         }
 
         if(expBaseType == Type.DECIMAL)
@@ -184,12 +184,12 @@ class SPMultiplyOp extends SPBinaryExpression {
 
         Type baseLhsType = lhs.type();
         if(baseLhsType.isArray()){
-            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+            baseLhsType = baseLhsType.getBaseType();
         }
 
         Type baseRhsType = rhs.type();
         if(baseRhsType.isArray()){
-            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+            baseRhsType = baseRhsType.getBaseType();
         }
 
         if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
@@ -211,7 +211,7 @@ class SPMultiplyOp extends SPBinaryExpression {
     private void convert(CLEmitter output, SPExpression exp){
         Type baseType = type;
         if(baseType.isArray()){
-            baseType = ((ArrayTypeName)baseType).getBaseType();
+            baseType = baseType.getBaseType();
         }
 
         if(baseType != Type.DECIMAL)
@@ -219,7 +219,7 @@ class SPMultiplyOp extends SPBinaryExpression {
 
         Type expBaseType = exp.type();
         if(expBaseType.isArray()){
-            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+            expBaseType = expBaseType.getBaseType();
         }
 
         if(expBaseType == Type.DECIMAL)
@@ -260,12 +260,12 @@ class SPDivisionOp extends SPBinaryExpression {
 
         Type baseLhsType = lhs.type();
         if(baseLhsType.isArray()){
-            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+            baseLhsType = baseLhsType.getBaseType();
         }
 
         Type baseRhsType = rhs.type();
         if(baseRhsType.isArray()){
-            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+            baseRhsType = baseRhsType.getBaseType();
         }
 
         if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
@@ -287,7 +287,7 @@ class SPDivisionOp extends SPBinaryExpression {
     private void convert(CLEmitter output, SPExpression exp){
         Type baseType = type;
         if(baseType.isArray()){
-            baseType = ((ArrayTypeName)baseType).getBaseType();
+            baseType = baseType.getBaseType();
         }
 
         if(baseType != Type.DECIMAL)
@@ -295,7 +295,7 @@ class SPDivisionOp extends SPBinaryExpression {
 
         Type expBaseType = exp.type();
         if(expBaseType.isArray()){
-            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+            expBaseType = expBaseType.getBaseType();
         }
 
         if(expBaseType == Type.DECIMAL)

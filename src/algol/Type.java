@@ -388,6 +388,21 @@ class Type {
         return signature;
     }
 
+    public Type getBaseType(){
+
+        String tp = toDescriptor().substring(toDescriptor().lastIndexOf('[') + 1, toDescriptor().length());
+
+        if(tp.equals("I")) {
+            return Type.INT;
+        } else if(tp.equals("D")){
+            return Type.DECIMAL;
+        } else if(tp.equals("L")){
+            return Type.BOOLEAN;
+        }
+
+        return Type.VOID;
+    }
+
 }
 
 class TypeName extends Type {
@@ -491,21 +506,6 @@ class ArrayTypeName extends Type {
         setClassRep(classRep);
 
         return this;
-    }
-
-    public Type getBaseType(){
-
-            String tp = toDescriptor().substring(toDescriptor().lastIndexOf('[') + 1, toDescriptor().length());
-
-            if(tp.equals("I")) {
-                return Type.INT;
-            } else if(tp.equals("D")){
-                return Type.DECIMAL;
-            } else if(tp.equals("L")){
-                return Type.BOOLEAN;
-            }
-
-        return Type.VOID;
     }
 
 }
