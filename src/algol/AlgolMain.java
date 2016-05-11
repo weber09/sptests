@@ -26,7 +26,7 @@ public class AlgolMain {
 
     public static void main(String[] args)
     {
-        String program = "algoritmo var a : vetor[0..5,0..5] de literal num,mult : inteiro inicio a[0,0] <- \"Gabriel\" escreval(a[0,0]) fimalgoritmo";
+        String program = "algoritmo var a : real b : inteiro inicio b <- 10 a <- b * 2.5 escreval(a)  fimalgoritmo";
 
         try {
             compile(program.getBytes());
