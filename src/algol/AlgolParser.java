@@ -981,7 +981,7 @@ public class AlgolParser implements AlgolParserConstants {
         SPExpression condition = Expression();
         int line = condition.line();
         jj_consume_token(FACA);
-        SPStatement body = null;
+        ArrayList<SPStatement> body = new ArrayList<>();
         label_14:
         while (true) {
             switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
@@ -1003,17 +1003,18 @@ public class AlgolParser implements AlgolParserConstants {
                     jj_la1[26] = jj_gen;
                     break label_14;
             }
-            body = Statement();
+            SPStatement statement = Statement();
+            body.add(statement);
         }
         jj_consume_token(FIMENQUANTO);
 
-        return new SPWhileStatement(line, condition, body);
+        return new SPWhileStatement(line, condition, new SPBlock(line, body));
     }
 
     static public SPStatement DoStatement() throws ParseException {
         jj_consume_token(REPITA);
         int line = token.beginLine;
-        SPStatement body = null;
+        ArrayList<SPStatement> body = new ArrayList<>();
         label_15:
         while (true) {
             switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
@@ -1035,11 +1036,12 @@ public class AlgolParser implements AlgolParserConstants {
                     jj_la1[27] = jj_gen;
                     break label_15;
             }
-            body = Statement();
+            SPStatement statement = Statement();
+            body.add(statement);
         }
         jj_consume_token(ATE);
         SPExpression condition = Expression();
-        return new SPDoStatement(line, condition, body);
+        return new SPDoStatement(line, condition, new SPBlock(line, body));
     }
 
     static public SPStatement ForStatement() throws ParseException {
