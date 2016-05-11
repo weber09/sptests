@@ -32,9 +32,9 @@ class SPArrayExpression
             this.type = theArray.type().componentType();
         }
 
-        for(SPExpression indexExpr : indexExprs) {
-            indexExpr = indexExpr.analyze(context);
-            indexExpr.type().mustMatchExpected(line(), Type.INT);
+        for(int i = 0; i < indexExprs.size(); i++){
+            indexExprs.set(i, indexExprs.get(i).analyze(context));
+            indexExprs.get(i).type().mustMatchExpected(line(), Type.INT);
         }
 
         return this;
@@ -54,21 +54,12 @@ class SPArrayExpression
                 output.addNoArgInstruction(AALOAD);
             }
         }
+
         indexExprs.get(indexExprs.size() - 1).codegen(output);
 
         Type baseType = type;
         if(type.isArray()){
-
-            String tp = type.toDescriptor().substring(type.toDescriptor().lastIndexOf('[') + 1, type.toDescriptor().length());
-            if(tp.equals("I")) {
-                baseType = Type.INT;
-            }else if(tp.equals("D")){
-                baseType = Type.DECIMAL;
-            } else if(tp.equals("Z")){
-                baseType = Type.BOOLEAN;
-            } else if(tp.equals("L")){
-                baseType = Type.LONG;
-            }
+            baseType = type.getBaseType();
         }
 
         if (baseType == Type.INT) {
@@ -104,8 +95,6 @@ class SPArrayExpression
             output.addNoArgInstruction(DUP2);
         }
 
-
-
         if (type == Type.INT) {
             output.addNoArgInstruction(IALOAD);
         } else if (type == Type.BOOLEAN) {
@@ -128,18 +117,8 @@ class SPArrayExpression
     public void codegenStore(CLEmitter output) {
 
         Type baseType = type;
-        if(type.isArray()){
-
-            String tp = type.toDescriptor().substring(type.toDescriptor().lastIndexOf('[') + 1, type.toDescriptor().length());
-            if(tp.equals("I")) {
-                baseType = Type.INT;
-            }else if(tp.equals("D")){
-                baseType = Type.DECIMAL;
-            } else if(tp.equals("Z")){
-                baseType = Type.BOOLEAN;
-            } else if(tp.equals("L")){
-                baseType = Type.LONG;
-            }
+        if(type.isArray()) {
+            baseType = baseType.getBaseType();
         }
 
 
