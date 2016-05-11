@@ -29,17 +29,25 @@ class SPPlusOp extends SPBinaryExpression {
     public SPExpression analyze(Context context) {
         lhs = lhs.analyze(context);
         rhs = rhs.analyze(context);
-        if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
-            return (new SPStringConcatenationOp(line, lhs, rhs))
-                    .analyze(context);
-        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+
+        Type baseLhsType = lhs.type();
+        if(baseLhsType.isArray()){
+            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+        }
+
+        Type baseRhsType = lhs.type();
+        if(baseRhsType.isArray()){
+            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+        }
+
+        if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
             type = Type.INT;
             opcode = IADD;
-        } else if(lhs.type() == Type.DECIMAL || rhs.type() == Type.DECIMAL) {
+        } else if(baseLhsType == Type.DECIMAL || baseRhsType == Type.DECIMAL) {
             type = Type.DECIMAL;
             opcode = DADD;
-        } else if(lhs.type() == Type.LONG && rhs.type() == Type.LONG){
-          type = Type.LONG;
+        } else if(baseLhsType == Type.LONG && baseRhsType == Type.LONG){
+            type = Type.LONG;
             opcode = LADD;
         } else {
             type = Type.ANY;
@@ -49,14 +57,24 @@ class SPPlusOp extends SPBinaryExpression {
     }
 
     private void convert(CLEmitter output, SPExpression exp){
-        if(type != Type.DECIMAL)
+        Type baseType = type;
+        if(baseType.isArray()){
+            baseType = ((ArrayTypeName)baseType).getBaseType();
+        }
+
+        if(baseType != Type.DECIMAL)
             return;
 
-        if(exp.type() == Type.DECIMAL)
+        Type expBaseType = type;
+        if(expBaseType.isArray()){
+            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+        }
+
+        if(expBaseType == Type.DECIMAL)
             return;
 
         int convertOpCode = I2D;
-        if(exp.type() == Type.LONG)
+        if(expBaseType == Type.LONG)
             convertOpCode = L2D;
 
         output.addNoArgInstruction(convertOpCode);
@@ -86,13 +104,24 @@ class SPSubtractOp extends SPBinaryExpression {
     public SPExpression analyze(Context context) {
         lhs = lhs.analyze(context);
         rhs = rhs.analyze(context);
-        if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+
+        Type baseLhsType = lhs.type();
+        if(baseLhsType.isArray()){
+            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+        }
+
+        Type baseRhsType = lhs.type();
+        if(baseRhsType.isArray()){
+            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+        }
+
+        if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
             type = Type.INT;
             opcode = ISUB;
-        } else if(lhs.type() == Type.DECIMAL || rhs.type() == Type.DECIMAL) {
+        } else if(baseLhsType == Type.DECIMAL || baseRhsType == Type.DECIMAL) {
             type = Type.DECIMAL;
             opcode = DSUB;
-        } else if(lhs.type() == Type.LONG && rhs.type() == Type.LONG){
+        } else if(baseLhsType == Type.LONG && baseRhsType == Type.LONG){
             type = Type.LONG;
             opcode = LSUB;
         } else {
@@ -103,11 +132,24 @@ class SPSubtractOp extends SPBinaryExpression {
     }
 
     private void convert(CLEmitter output, SPExpression exp){
-        if(type != Type.DECIMAL)
+        Type baseType = type;
+        if(baseType.isArray()){
+            baseType = ((ArrayTypeName)baseType).getBaseType();
+        }
+
+        if(baseType != Type.DECIMAL)
+            return;
+
+        Type expBaseType = type;
+        if(expBaseType.isArray()){
+            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+        }
+
+        if(expBaseType == Type.DECIMAL)
             return;
 
         int convertOpCode = I2D;
-        if(exp.type() == Type.LONG)
+        if(expBaseType == Type.LONG)
             convertOpCode = L2D;
 
         output.addNoArgInstruction(convertOpCode);
@@ -139,13 +181,24 @@ class SPMultiplyOp extends SPBinaryExpression {
     public SPExpression analyze(Context context) {
         lhs = lhs.analyze(context);
         rhs = rhs.analyze(context);
-        if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+
+        Type baseLhsType = lhs.type();
+        if(baseLhsType.isArray()){
+            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+        }
+
+        Type baseRhsType = lhs.type();
+        if(baseRhsType.isArray()){
+            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+        }
+
+        if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
             type = Type.INT;
             opcode = IMUL;
-        } else if(lhs.type() == Type.DECIMAL || rhs.type() == Type.DECIMAL) {
+        } else if(baseLhsType == Type.DECIMAL || baseRhsType == Type.DECIMAL) {
             type = Type.DECIMAL;
             opcode = DMUL;
-        } else if(lhs.type() == Type.LONG && rhs.type() == Type.LONG){
+        } else if(baseLhsType == Type.LONG && baseRhsType == Type.LONG){
             type = Type.LONG;
             opcode = LMUL;
         } else {
@@ -156,11 +209,24 @@ class SPMultiplyOp extends SPBinaryExpression {
     }
 
     private void convert(CLEmitter output, SPExpression exp){
-        if(type != Type.DECIMAL)
+        Type baseType = type;
+        if(baseType.isArray()){
+            baseType = ((ArrayTypeName)baseType).getBaseType();
+        }
+
+        if(baseType != Type.DECIMAL)
+            return;
+
+        Type expBaseType = type;
+        if(expBaseType.isArray()){
+            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+        }
+
+        if(expBaseType == Type.DECIMAL)
             return;
 
         int convertOpCode = I2D;
-        if(exp.type() == Type.LONG)
+        if(expBaseType == Type.LONG)
             convertOpCode = L2D;
 
         output.addNoArgInstruction(convertOpCode);
@@ -191,13 +257,24 @@ class SPDivisionOp extends SPBinaryExpression {
     public SPExpression analyze(Context context) {
         lhs = lhs.analyze(context);
         rhs = rhs.analyze(context);
-        if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+
+        Type baseLhsType = lhs.type();
+        if(baseLhsType.isArray()){
+            baseLhsType = ((ArrayTypeName)baseLhsType).getBaseType();
+        }
+
+        Type baseRhsType = lhs.type();
+        if(baseRhsType.isArray()){
+            baseRhsType = ((ArrayTypeName)baseRhsType).getBaseType();
+        }
+
+        if (baseLhsType == Type.INT && baseRhsType == Type.INT) {
             type = Type.INT;
             opcode = IDIV;
-        } else if(lhs.type() == Type.DECIMAL || rhs.type() == Type.DECIMAL) {
+        } else if(baseLhsType == Type.DECIMAL || baseRhsType == Type.DECIMAL) {
             type = Type.DECIMAL;
             opcode = DDIV;
-        } else if(lhs.type() == Type.LONG && rhs.type() == Type.LONG){
+        } else if(baseLhsType == Type.LONG && baseRhsType == Type.LONG){
             type = Type.LONG;
             opcode = LDIV;
         } else {
@@ -208,11 +285,24 @@ class SPDivisionOp extends SPBinaryExpression {
     }
 
     private void convert(CLEmitter output, SPExpression exp){
-        if(type != Type.DECIMAL)
+        Type baseType = type;
+        if(baseType.isArray()){
+            baseType = ((ArrayTypeName)baseType).getBaseType();
+        }
+
+        if(baseType != Type.DECIMAL)
+            return;
+
+        Type expBaseType = type;
+        if(expBaseType.isArray()){
+            expBaseType =((ArrayTypeName)expBaseType).getBaseType();
+        }
+
+        if(expBaseType == Type.DECIMAL)
             return;
 
         int convertOpCode = I2D;
-        if(exp.type() == Type.LONG)
+        if(expBaseType == Type.LONG)
             convertOpCode = L2D;
 
         output.addNoArgInstruction(convertOpCode);

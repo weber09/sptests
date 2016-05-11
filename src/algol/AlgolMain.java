@@ -1,41 +1,123 @@
 package algol;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 /**
  * Created by Gabriel on 04/03/2016.
  */
 public class AlgolMain {
 
-    public static void main(String[] args)
-    {
-        String program = "algoritmo \"soma\" var a, b, c : inteiro inicio a <- 2 b <- 3 c <- a + b fimalgoritmo";
+    private static SimpleCharStream charStream;
 
-        compile(program.getBytes());
+    private static AlgolParserTokenManager scanner;
+
+    private static AlgolParser parser;
+
+    private static boolean errorHasOcurred;
+    public boolean errorHasOccurred(){
+        return errorHasOcurred;
     }
 
-    public static void compile(byte[] codeBytes) {
-        AlgolParserTokenManager scanner = new AlgolParserTokenManager(new SimpleCharStream(new ByteArrayInputStream(codeBytes)));
+    private static ArrayList<SemanticError> semanticErrors;
+    public static ArrayList<SemanticError> getSemanticErrors(){
+        return semanticErrors;
+    }
 
-        SPCompilationUnit ast = null;
-        AlgolParser parser = new AlgolParser(scanner);
+    public static void main(String[] args)
+    {
+        String program = "algoritmo var a : vetor[0..5,0..5] de literal num,mult : inteiro inicio a[0,0] <- \"Gabriel\" escreval(a[0,0]) fimalgoritmo";
+
+        try {
+            compile(program.getBytes());
+        }
+        catch(Exception e){
+            }
+    }
+
+    public static void compile(byte[] codeBytes) throws ParseException {
+
+        semanticErrors = new ArrayList<>();
+
+        if (charStream == null)
+            charStream = new SimpleCharStream(new ByteArrayInputStream(codeBytes));
+        else
+            charStream.ReInit(new ByteArrayInputStream(codeBytes));
+
+        if (scanner == null)
+            scanner = new AlgolParserTokenManager(charStream);
+        else
+            scanner.ReInit(charStream);
+
+        errorHasOcurred = false;
+
+        SPCompilationUnit ast;
+        if (parser == null)
+            parser = new AlgolParser(scanner);
+        else
+            parser.ReInit(scanner);
 
         try {
             ast = parser.compilationUnit();
+        } catch (ParseException exception) {
+            System.out.println(exception.getMessage());
+            throw exception;
         }
-        catch(ParseException exception)
+
+        errorHasOcurred |= ast.errorHasOccurred();
+        semanticErrors.clear();
+        if(ast.getContext() != null) {
+            semanticErrors.addAll(ast.getContext().semanticErrors);
+        }
+
+        try {
+            ast.preAnalyze();
+        }
+        catch(Exception exc)
         {
+            System.out.println(exc.getMessage());
+            throw exc;
+        }
+        errorHasOcurred |= ast.errorHasOccurred();
+        semanticErrors.clear();
+        if(ast.getContext() != null) {
+            semanticErrors.addAll(ast.getContext().semanticErrors);
         }
 
-        ast.preAnalyze();
+        try {
+            ast.analyze(null);
+        }
+        catch(Exception exc1) {
+            System.out.println(exc1.getMessage());
+            throw exc1;
+        }
 
-        ast.analyze(null);
+        errorHasOcurred |= ast.errorHasOccurred();
+        semanticErrors.clear();
+        if(ast.getContext() != null){
+            semanticErrors.addAll(ast.getContext().semanticErrors);
+        }
 
-        String outputDir = "D:\\Documentos";
+        String outputDir = "C:\\AlgolBytecodes";
 
-        CLEmitter clEmitter = new CLEmitter(true);
-        clEmitter.destinationDir(outputDir);
-        ast.codegen(clEmitter);
+        try {
+            CLEmitter clEmitter = new CLEmitter(true);
+            clEmitter.destinationDir(outputDir);
+            ast.codegen(clEmitter);
+
+        }
+        catch(Exception exc2){
+            System.out.println(exc2.getMessage());
+            throw exc2;
+        }
+
+        errorHasOcurred |= ast.errorHasOccurred();
+        semanticErrors.clear();
+        if(ast.getContext() != null) {
+            semanticErrors.addAll(ast.getContext().semanticErrors);
+        }
     }
+
+
 
 }

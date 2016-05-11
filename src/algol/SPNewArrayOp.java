@@ -44,7 +44,8 @@ class SPNewArrayOp extends SPExpression {
                     type.componentType().isReference() ? ANEWARRAY : NEWARRAY,
                     type.componentType().jvmName());
         } else {
-            output.addMULTIANEWARRAYInstruction(type.toDescriptor(), dimExprs
+            String descriptor = ((ArrayTypeName)type).toDescriptor();
+            output.addMULTIANEWARRAYInstruction(descriptor, dimExprs
                     .size());
         }
     }

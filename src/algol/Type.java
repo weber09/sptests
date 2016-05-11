@@ -214,7 +214,7 @@ class Type {
 
     private static String toJava(Class classRep) {
         return classRep.isArray() ? toJava(classRep.getComponentType()) + "[]"
-                : classRep.getName();
+                : classRep.getName().replace('.', '/');
     }
 
     public String packageName() {
@@ -451,8 +451,11 @@ class ArrayTypeName extends Type {
 
     private Type componentType;
 
-    public ArrayTypeName(Type componentType) {
+    private int arraySize;
+
+    public ArrayTypeName(Type componentType, int arraySize) {
         this.componentType = componentType;
+        this.arraySize = arraySize;
     }
 
     public Type componentType() {
@@ -460,11 +463,23 @@ class ArrayTypeName extends Type {
     }
 
     public String toDescriptor() {
-        return "[" + componentType.toDescriptor();
+
+        String descriptor = "";
+        for(int i = 0; i < arraySize; i++){
+            descriptor += "[";
+        }
+
+        descriptor += componentType.toDescriptor();
+
+        return descriptor;
     }
 
     public String toString() {
-        return componentType.toString() + "[]";
+        String descriptor = componentType.toDescriptor();
+        for(int i = 0; i < arraySize; i++){
+            descriptor += "[]";
+        }
+        return descriptor;
     }
 
     public Type resolve(Context context) {
@@ -472,7 +487,25 @@ class ArrayTypeName extends Type {
 
         Class classRep = Array.newInstance(componentType().classRep(), 0)
                 .getClass();
-        return Type.typeFor(classRep);
+
+        setClassRep(classRep);
+
+        return this;
+    }
+
+    public Type getBaseType(){
+
+            String tp = toDescriptor().substring(toDescriptor().lastIndexOf('[') + 1, toDescriptor().length());
+
+            if(tp.equals("I")) {
+                return Type.INT;
+            } else if(tp.equals("D")){
+                return Type.DECIMAL;
+            } else if(tp.equals("L")){
+                return Type.BOOLEAN;
+            }
+
+        return Type.VOID;
     }
 
 }

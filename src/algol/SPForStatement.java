@@ -49,6 +49,8 @@ class SPForStatement extends SPStatement{
         output.addBranchInstruction(GOTO, test);
 
         output.addLabel(out);
+
+        output.addNoArgInstruction(NOP);
     }
 
 }

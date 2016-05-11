@@ -4,22 +4,10 @@
 
 package algol;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.DataOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.io.*;
+import java.util.*;
 
 import static algol.CLConstants.*;
-import static algol.CLConstants.Category.*;
 
 public class CLEmitter {
 
@@ -75,7 +63,7 @@ public class CLEmitter {
 
     private boolean errorHasOccurred;
 
-    private static ByteClassLoader byteClassLoader;
+    public static ByteClassLoader byteClassLoader;
 
     private void initializeMethodVariables() {
         mAccessFlags = 0;
@@ -167,7 +155,7 @@ public class CLEmitter {
                     mDescriptorIndex, mAttributes.size(), mAttributes));
         }
 
-        if (innerClasses.size() > 0) {
+        if (innerClasses != null && innerClasses.size() > 0) {
             addClassAttribute(innerClassesAttribute());
         }
 
@@ -599,9 +587,9 @@ public class CLEmitter {
         if (!validInternalForm(thisClass)) {
             reportEmitterError("'%s' is not in internal form", thisClass);
         }
-        if (!validInternalForm(superClass)) {
-            reportEmitterError("'%s' is not in internal form", superClass);
-        }
+       // if (!validInternalForm(superClass)) {
+       //     reportEmitterError("'%s' is not in internal form", superClass);
+       // }
         if (accessFlags != null) {
             for (int i = 0; i < accessFlags.size(); i++) {
                 clFile.accessFlags |= CLFile

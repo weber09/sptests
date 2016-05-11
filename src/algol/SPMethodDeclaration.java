@@ -83,8 +83,8 @@ class SPMethodDeclaration
             this.context.nextOffset();
         }
 
-        // Declare the parameters. We consider a formal parameter 
-        // to be always initialized, via a function call.
+        // Declare the parameters. a formal parameter
+        // is  always initialized, via a function call.
         for (SPFormalParameter param : params) {
             LocalVariableDefn defn = new LocalVariableDefn(param.type(),
                     this.context.nextOffset());

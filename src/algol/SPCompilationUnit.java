@@ -19,7 +19,15 @@ class SPCompilationUnit extends SPAST {
 
     private CompilationUnitContext context;
 
+    public CompilationUnitContext getContext(){
+        return context;
+    }
+
     private boolean isInError;
+
+    public String fileName(){
+        return fileName;
+    }
 
     public SPCompilationUnit(String fileName, int line, TypeName packageName,
                             ArrayList<TypeName> imports, ArrayList<SPAST> typeDeclarations) {
@@ -32,8 +40,9 @@ class SPCompilationUnit extends SPAST {
         compilationUnit = this;
     }
 
-    public String packageName() {
-        return packageName == null ? "" : packageName.toString();
+    public String packageName()  {
+        return "AlgolBytecodes";
+        //return packageName == null ? "" : packageName.toString();
     }
 
     public boolean errorHasOccurred() {
@@ -46,6 +55,9 @@ class SPCompilationUnit extends SPAST {
         System.err.printf("%s:%d: ", fileName, line);
         System.err.printf(message, arguments);
         System.err.println();
+        SemanticError semanticError = new SemanticError(line, message, arguments);
+        if(context != null)
+            context.semanticErrors.add(semanticError);
     }
 
     public void preAnalyze() {

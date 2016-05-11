@@ -3,6 +3,9 @@ package algol;
 /**
  * Created by Gabriel on 23/03/2016.
  */
+
+import java.util.ArrayList;
+
 import static algol.CLConstants.*;
 
 class SPArrayExpression
@@ -10,25 +13,30 @@ class SPArrayExpression
 
     private SPExpression theArray;
 
-    private SPExpression indexExpr;
+    private ArrayList<SPExpression> indexExprs;
 
     public SPArrayExpression(int line, SPExpression theArray,
-                            SPExpression indexExpr) {
+                            ArrayList<SPExpression> indexExprs) {
         super(line);
         this.theArray = theArray;
-        this.indexExpr = indexExpr;
+        this.indexExprs = indexExprs;
     }
 
     public SPExpression analyze(Context context) {
         theArray = theArray.analyze(context);
-        indexExpr = indexExpr.analyze(context);
+
         if (!(theArray.type().isArray())) {
             SPAST.compilationUnit.reportSemanticError(line(), "attempt to index a non-array object");
             this.type = Type.ANY;
         } else {
             this.type = theArray.type().componentType();
         }
-        indexExpr.type().mustMatchExpected(line(), Type.INT);
+
+        for(SPExpression indexExpr : indexExprs) {
+            indexExpr = indexExpr.analyze(context);
+            indexExpr.type().mustMatchExpected(line(), Type.INT);
+        }
+
         return this;
     }
 
@@ -39,25 +47,54 @@ class SPArrayExpression
 
     public void codegen(CLEmitter output) {
         theArray.codegen(output);
-        indexExpr.codegen(output);
-        if (type == Type.INT) {
+
+        if(indexExprs.size() > 1) {
+            for (int i = 0; i < indexExprs.size() - 1; i++) {
+                indexExprs.get(i).codegen(output);
+                output.addNoArgInstruction(AALOAD);
+            }
+        }
+        indexExprs.get(indexExprs.size() - 1).codegen(output);
+
+        Type baseType = type;
+        if(type.isArray()){
+
+            String tp = type.toDescriptor().substring(type.toDescriptor().lastIndexOf('[') + 1, type.toDescriptor().length());
+            if(tp.equals("I")) {
+                baseType = Type.INT;
+            }else if(tp.equals("D")){
+                baseType = Type.DECIMAL;
+            } else if(tp.equals("Z")){
+                baseType = Type.BOOLEAN;
+            } else if(tp.equals("L")){
+                baseType = Type.LONG;
+            }
+        }
+
+        if (baseType == Type.INT) {
             output.addNoArgInstruction(IALOAD);
-        } else if (type == Type.BOOLEAN) {
+        } else if (baseType == Type.BOOLEAN) {
             output.addNoArgInstruction(BALOAD);
-        } else if (type == Type.CHAR) {
+        } else if (baseType == Type.CHAR) {
             output.addNoArgInstruction(CALOAD);
-        } else if (!type.isPrimitive()) {
+        } else if (!baseType.isPrimitive()) {
             output.addNoArgInstruction(AALOAD);
-        } else if (type == Type.DECIMAL) {
+        } else if (baseType == Type.DECIMAL) {
             output.addNoArgInstruction(DALOAD);
-        } else if (type == Type.LONG) {
+        } else if (baseType == Type.LONG) {
             output.addNoArgInstruction(LALOAD);
         }
     }
 
     public void codegenLoadLhsLvalue(CLEmitter output) {
         theArray.codegen(output);
-        indexExpr.codegen(output);
+        if(indexExprs.size() > 1) {
+            for (int i = 0; i < indexExprs.size() - 1; i++) {
+                indexExprs.get(i).codegen(output);
+                output.addNoArgInstruction(AALOAD);
+            }
+        }
+        indexExprs.get(indexExprs.size() - 1).codegen(output);
     }
 
     public void codegenLoadLhsRvalue(CLEmitter output) {
@@ -66,6 +103,9 @@ class SPArrayExpression
         } else {
             output.addNoArgInstruction(DUP2);
         }
+
+
+
         if (type == Type.INT) {
             output.addNoArgInstruction(IALOAD);
         } else if (type == Type.BOOLEAN) {
@@ -86,17 +126,34 @@ class SPArrayExpression
     }
 
     public void codegenStore(CLEmitter output) {
-        if (type == Type.INT) {
+
+        Type baseType = type;
+        if(type.isArray()){
+
+            String tp = type.toDescriptor().substring(type.toDescriptor().lastIndexOf('[') + 1, type.toDescriptor().length());
+            if(tp.equals("I")) {
+                baseType = Type.INT;
+            }else if(tp.equals("D")){
+                baseType = Type.DECIMAL;
+            } else if(tp.equals("Z")){
+                baseType = Type.BOOLEAN;
+            } else if(tp.equals("L")){
+                baseType = Type.LONG;
+            }
+        }
+
+
+        if (baseType == Type.INT) {
             output.addNoArgInstruction(IASTORE);
-        } else if (type == Type.BOOLEAN) {
+        } else if (baseType == Type.BOOLEAN) {
             output.addNoArgInstruction(BASTORE);
-        } else if (type == Type.CHAR) {
+        } else if (baseType == Type.CHAR) {
             output.addNoArgInstruction(CASTORE);
-        } else if (!type.isPrimitive()) {
+        } else if (!baseType.isPrimitive()) {
             output.addNoArgInstruction(AASTORE);
-        }else if (type == Type.DECIMAL) {
+        }else if (baseType == Type.DECIMAL) {
             output.addNoArgInstruction(DASTORE);
-        } else if (type == Type.LONG) {
+        } else if (baseType == Type.LONG) {
             output.addNoArgInstruction(LASTORE);
         }
 

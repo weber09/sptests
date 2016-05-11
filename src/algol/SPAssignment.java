@@ -34,15 +34,24 @@ class SPAssignOp extends SPAssignment {
     }
 
     private boolean mustMatchTypes(){
+        Type baseTypeLhs = lhs.type();
+        if(lhs.type().isArray()){
+            baseTypeLhs =((ArrayTypeName)baseTypeLhs).getBaseType();
+        }
 
-        if(rhs.type().matchesExpected(lhs.type())) {
+        Type baseTypeRhs = rhs.type();
+        if(rhs.type().isArray()){
+            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+        }
+
+        if(baseTypeRhs.matchesExpected(baseTypeLhs)) {
             return true;
         }
 
-        if(lhs.type() == Type.DECIMAL && (rhs.type() == Type.LONG || rhs.type() == Type.INT))
+        if(baseTypeLhs == Type.DECIMAL && (baseTypeRhs == Type.LONG || baseTypeRhs == Type.INT))
             return true;
 
-       return lhs.type() == Type.LONG && rhs.type() == Type.INT;
+       return baseTypeLhs == Type.LONG && baseTypeRhs == Type.INT;
     }
 
     public SPExpression analyze(Context context) {
@@ -54,10 +63,15 @@ class SPAssignOp extends SPAssignment {
         rhs = rhs.analyze(context);
 
         if(!mustMatchTypes()){
-            SPAST.compilationUnit.reportSemanticError(line, "Type %s doesn't match type %s", this, lhs.type());
+            SPAST.compilationUnit.reportSemanticError(line, "Type %s doesn't match type %s", lhs.type(), rhs.type());
         }
 
-        type = rhs.type();
+        Type baseTypeRhs = rhs.type();
+        if(rhs.type().isArray()){
+            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+        }
+
+        type = baseTypeRhs;
         /*if (lhs instanceof SPVariable) {
             IDefn defn = ((SPVariable) lhs).iDefn();
             if (defn != null) {
@@ -76,12 +90,22 @@ class SPAssignOp extends SPAssignment {
             ((SPLhs) lhs).codegenDuplicateRvalue(output);
         }
 
-        if(lhs.type() == Type.DECIMAL){
-            if(rhs.type() == Type.INT)
+        Type baseType = lhs.type();
+        if(baseType.isArray()){
+            baseType = ((ArrayTypeName)baseType).getBaseType();
+        }
+
+        Type baseTypeRhs = rhs.type();
+        if(baseTypeRhs.isArray()){
+            baseTypeRhs = ((ArrayTypeName)baseTypeRhs).getBaseType();
+        }
+
+        if(baseType == Type.DECIMAL){
+            if(baseTypeRhs == Type.INT)
                 output.addNoArgInstruction(I2D);
-            else if(rhs.type() == Type.LONG)
+            else if(baseTypeRhs == Type.LONG)
                 output.addNoArgInstruction(L2D);
-        } else if(lhs.type() == Type.LONG) {
+        } else if(baseType == Type.LONG) {
             output.addNoArgInstruction(I2L);
         }
 

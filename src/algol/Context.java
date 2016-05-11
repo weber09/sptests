@@ -4,6 +4,7 @@ package algol;
  * Created by Gabriel on 06/03/2016.
  */
 
+        import java.util.ArrayList;
         import java.util.Map;
         import java.util.HashMap;
         import java.util.Set;
@@ -89,8 +90,11 @@ class Context {
 
 class CompilationUnitContext extends Context {
 
+    public ArrayList<SemanticError> semanticErrors;
+
     public CompilationUnitContext() {
         super(null, null, null);
+        semanticErrors = new ArrayList<>();
         compilationUnitContext = this;
     }
 }

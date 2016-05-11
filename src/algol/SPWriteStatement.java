@@ -34,8 +34,14 @@ class SPWriteStatement extends SPStatement{
         for(SPExpression param : params) {
             output.addMemberAccessInstruction(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
             param.codegen(output);
-            String methodSignature = String.format("(%s)V", param.type().toDescriptor());
-            output.addMemberAccessInstruction(INVOKESPECIAL, "java/io/PrintStream", writeMethod, methodSignature);
+
+            String descriptor = param.type().toDescriptor();
+            if(param.type().isArray()){
+                descriptor = ((ArrayTypeName)param.type()).getBaseType().toDescriptor();
+            }
+
+            String methodSignature = String.format("(%s)V", descriptor);
+            output.addMemberAccessInstruction(INVOKEVIRTUAL, "java/io/PrintStream", writeMethod, methodSignature);
         }
 
     }

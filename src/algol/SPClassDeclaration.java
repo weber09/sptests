@@ -70,12 +70,6 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
 
         superType = superType.resolve(this.context);
 
-        thisType.checkAccess(line, superType);
-        if (superType.isFinal()) {
-            SPAST.compilationUnit.reportSemanticError(line,
-                    "Cannot extend a final type: %s", superType.toString());
-        }
-
         CLEmitter partial = new CLEmitter(false);
 
         String qualifiedName = SPAST.compilationUnit.packageName() == "" ? name : SPAST.compilationUnit.packageName() + "/" + name;
@@ -164,7 +158,7 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
     }
 
     private void codegenClassInit(CLEmitter output) {
-        ArrayList<String> mods = new ArrayList<String>();
+        /*ArrayList<String> mods = new ArrayList<String>();
         mods.add("public");
         mods.add("static");
         output.addMethod(mods, "<clinit>", "()V", null, false);
@@ -173,7 +167,7 @@ class SPClassDeclaration extends SPAST implements SPTypeDecl {
             staticField.codegenInitializations(output);
         }
 
-        output.addNoArgInstruction(RETURN);
+        output.addNoArgInstruction(RETURN);*/
     }
 
 }
