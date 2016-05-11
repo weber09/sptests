@@ -911,7 +911,7 @@ public class AlgolParser implements AlgolParserConstants {
         int line = token.beginLine;
         SPExpression test = Expression();
         jj_consume_token(ENTAO);
-        SPStatement thenExpression = null;
+        ArrayList<SPStatement> thenExpressions = new ArrayList<>();
         label_12:
         while (true) {
             switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
@@ -933,9 +933,11 @@ public class AlgolParser implements AlgolParserConstants {
                     jj_la1[23] = jj_gen;
                     break label_12;
             }
-            thenExpression = Statement();
+            SPStatement thenExpression = Statement();
+            thenExpressions.add(thenExpression);
         }
-        SPStatement elseStatement = null;
+
+        ArrayList<SPStatement> elseStatements = new ArrayList<>();
         switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
             case SENAO: {
                 jj_consume_token(SENAO);
@@ -960,7 +962,8 @@ public class AlgolParser implements AlgolParserConstants {
                             jj_la1[24] = jj_gen;
                             break label_13;
                     }
-                    elseStatement = Statement();
+                    SPStatement elseStatement = Statement();
+                    elseStatements.add(elseStatement);
                 }
                 break;
             }
@@ -968,8 +971,9 @@ public class AlgolParser implements AlgolParserConstants {
                 jj_la1[25] = jj_gen;
         }
         jj_consume_token(FIMSE);
-
-        return new SPIfStatement(line, test, thenExpression, elseStatement);
+        SPStatement thenBlock = new SPBlock(line, thenExpressions);
+        SPStatement elseBlock = new SPBlock(line, elseStatements);
+        return new SPIfStatement(line, test, thenBlock, elseBlock);
     }
 
     static public SPStatement WhileStatement() throws ParseException {
