@@ -143,12 +143,15 @@ public class AlgolParser implements AlgolParserConstants {
 
                     int line = token.beginLine;
                     ArrayList<SPExpression> dimensionsBounds = new ArrayList<>();
+                    ArrayList<SPExpression> lowerBounds = new ArrayList<>();
 
                     jj_consume_token(VETOR);
                     jj_consume_token(LBRACKET);
                     jj_consume_token(INTEGER_LITERAL);
 
                     SPExpression lowerBound = new SPLiteralInt(token.beginLine, token.image);
+
+                    lowerBounds.add(lowerBound);
 
                     jj_consume_token(DOUBLEDOT);
 
@@ -164,6 +167,7 @@ public class AlgolParser implements AlgolParserConstants {
                             jj_consume_token(COMMA);
                             jj_consume_token(INTEGER_LITERAL);
                             lowerBound = new SPLiteralInt(token.beginLine, token.image);
+                            lowerBounds.add(lowerBound);
                             jj_consume_token(DOUBLEDOT);
                             jj_consume_token(INTEGER_LITERAL);
                             upperBound = new SPLiteralInt(token.beginLine, token.image);
@@ -182,8 +186,9 @@ public class AlgolParser implements AlgolParserConstants {
                     Type type = Type();
 
                     type = new ArrayTypeName(type, dimensionsBounds.size());
+                    type.setLowerBounds(lowerBounds);
 
-                    SPNewArrayOp newArray = new SPNewArrayOp(line, type, dimensionsBounds);
+                    SPNewArrayOp newArray = new SPNewArrayOp(line, type, dimensionsBounds, lowerBounds);
 
                     for (SPVariableDeclarator variable : typeVariables) {
                         variable.setType(type);
@@ -487,7 +492,6 @@ public class AlgolParser implements AlgolParserConstants {
                     jj_consume_token(-1);
                     throw new ParseException();
             }
-            RelationalExpression();
         }
 
         return lhs;

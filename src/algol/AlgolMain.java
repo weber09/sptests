@@ -26,7 +26,7 @@ public class AlgolMain {
 
     public static void main(String[] args)
     {
-        String program = "algoritmo var v : vetor [0..4] de inteiro i, aux, j : inteiro inicio para i de 0 ate 4 faca escreval(\"Digite um numero: \") leia(aux) v[i] <- aux fimpara para i de 0 ate 3 faca para j de i ate 4 faca se v[j] < v[i] entao aux <- v[i] v[i] <- v[j] v[j] <- aux fimse fimpara fimpara para i de 0 ate 4 faca escreval(v[i]) fimpara fimalgoritmo";
+        String program = "algoritmo var a,b: inteiro t : logico inicio leia(a,b) t <- a = b escreval(t) fimalgoritmo";
 
         try {
             compile(program.getBytes());

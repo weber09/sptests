@@ -51,11 +51,15 @@ class SPArrayExpression
         if(indexExprs.size() > 1) {
             for (int i = 0; i < indexExprs.size() - 1; i++) {
                 indexExprs.get(i).codegen(output);
+                //theArray.type().getArrayLowerBounds().get(i).codegen(output);
+                //output.addNoArgInstruction(ISUB);
                 output.addNoArgInstruction(AALOAD);
             }
         }
 
         indexExprs.get(indexExprs.size() - 1).codegen(output);
+        //theArray.type().getArrayLowerBounds().get(theArray.type().getArrayLowerBounds().size() - 1).codegen(output);
+        //output.addNoArgInstruction(ISUB);
 
         Type baseType = type;
         if(type.isArray()){
@@ -82,10 +86,14 @@ class SPArrayExpression
         if(indexExprs.size() > 1) {
             for (int i = 0; i < indexExprs.size() - 1; i++) {
                 indexExprs.get(i).codegen(output);
+                //theArray.type().getArrayLowerBounds().get(i).codegen(output);
+                //output.addNoArgInstruction(ISUB);
                 output.addNoArgInstruction(AALOAD);
             }
         }
         indexExprs.get(indexExprs.size() - 1).codegen(output);
+        //theArray.type().getArrayLowerBounds().get(theArray.type().getArrayLowerBounds().size() - 1).codegen(output);
+        //output.addNoArgInstruction(ISUB);
     }
 
     public void codegenLoadLhsRvalue(CLEmitter output) {

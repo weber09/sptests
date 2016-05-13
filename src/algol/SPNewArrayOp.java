@@ -17,10 +17,13 @@ class SPNewArrayOp extends SPExpression {
 
     private ArrayList<SPExpression> dimExprs;
 
-    public SPNewArrayOp(int line, Type typeSpec, ArrayList<SPExpression> dimExprs) {
+    private ArrayList<SPExpression> lowerBounds;
+
+    public SPNewArrayOp(int line, Type typeSpec, ArrayList<SPExpression> dimExprs, ArrayList<SPExpression> lowerBounds) {
         super(line);
         this.typeSpec = typeSpec;
         this.dimExprs = dimExprs;
+        this.lowerBounds = lowerBounds;
     }
 
     public SPExpression analyze(Context context) {
@@ -28,7 +31,11 @@ class SPNewArrayOp extends SPExpression {
         for (int i = 0; i < dimExprs.size(); i++) {
             dimExprs.set(i, dimExprs.get(i).analyze(context));
             dimExprs.get(i).type().mustMatchExpected(line, Type.INT);
+            lowerBounds.set(i, lowerBounds.get(i).analyze(context));
+            lowerBounds.get(i).type().mustMatchExpected(line, Type.INT);
         }
+        //type.setLowerBounds(lowerBounds);
+        //typeSpec.setLowerBounds(lowerBounds);
         return this;
     }
 

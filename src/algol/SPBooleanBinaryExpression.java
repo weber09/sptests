@@ -10,18 +10,6 @@ abstract class SPBooleanBinaryExpression extends SPBinaryExpression {
     protected SPBooleanBinaryExpression(int line, SPExpression lhs, SPExpression rhs) {
         super(line, lhs, rhs);
     }
-
-    public void codegen(CLEmitter output) {
-        String elseLabel = output.createLabel();
-        String endIfLabel = output.createLabel();
-        this.codegen(output, elseLabel, false);
-        output.addNoArgInstruction(ICONST_1); // true
-        output.addBranchInstruction(GOTO, endIfLabel);
-        output.addLabel(elseLabel);
-        output.addNoArgInstruction(ICONST_0); // false
-        output.addLabel(endIfLabel);
-    }
-
 }
 
 class SPEqualOp extends SPBooleanBinaryExpression {
@@ -33,18 +21,70 @@ class SPEqualOp extends SPBooleanBinaryExpression {
     public SPExpression analyze(Context context) {
         lhs = lhs.analyze(context);
         rhs = rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), rhs.type());
-        type = Type.BOOLEAN;
+
+        Type lhsBaseType = lhs.type();
+        if(lhsBaseType.isArray()){
+            lhsBaseType = lhsBaseType.getBaseType();
+        }
+
+        Type rhsBaseType = rhs.type();
+        if(rhsBaseType.isArray()){
+            rhsBaseType = rhsBaseType.getBaseType();
+        }
+
+        if ((lhsBaseType == Type.INT && rhsBaseType == Type.INT) ||
+            lhsBaseType == Type.DECIMAL || rhsBaseType == Type.DECIMAL ||
+            (lhsBaseType == Type.LONG && rhsBaseType == Type.LONG) ||
+            (lhsBaseType == Type.BOOLEAN && rhsBaseType == Type.BOOLEAN)){
+            type = Type.BOOLEAN;
+        } else {
+            type = Type.ANY;
+            SPAST.compilationUnit.reportSemanticError(line(), "Invalid operand types for =");
+        }
+
         return this;
     }
 
-    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+    @Override
+    public void codegen(CLEmitter output) {
+
+        String elseLabel = output.createLabel();
+        String endIfLabel = output.createLabel();
+
+        Type lhsBaseType = lhs.type();
+        if(lhsBaseType.isArray()){
+            lhsBaseType = lhsBaseType.getBaseType();
+        }
+
+        Type rhsBaseType = rhs.type();
+        if(rhsBaseType.isArray()){
+            rhsBaseType = rhsBaseType.getBaseType();
+        }
+
         lhs.codegen(output);
+
+        if(lhsBaseType == Type.INT && rhsBaseType == Type.DECIMAL){
+            output.addNoArgInstruction(I2D);
+        }
+
         rhs.codegen(output);
 
-        int opcode = onTrue ? IFEQ : IFNE;
+        if(rhsBaseType == Type.INT && lhsBaseType == Type.DECIMAL){
+            output.addNoArgInstruction(I2D);
+        }
 
-        output.addBranchInstruction(opcode, targetLabel);
+        if(lhsBaseType == Type.DECIMAL || rhsBaseType == Type.DECIMAL){
+            output.addNoArgInstruction(DCMPL);
+            output.addBranchInstruction(IFNE, elseLabel);
+        }else{
+            output.addBranchInstruction(IF_ICMPNE, elseLabel);
+        }
+
+        output.addNoArgInstruction(ICONST_1); // true
+        output.addBranchInstruction(GOTO, endIfLabel);
+        output.addLabel(elseLabel);
+        output.addNoArgInstruction(ICONST_0); // false
+        output.addLabel(endIfLabel);
     }
 }
 
@@ -62,13 +102,22 @@ class SPNotEqualOp extends SPBooleanBinaryExpression {
         return this;
     }
 
-    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+    @Override
+    public void codegen(CLEmitter output) {
+
+        String elseLabel = output.createLabel();
+        String endIfLabel = output.createLabel();
+
         lhs.codegen(output);
         rhs.codegen(output);
 
-        int opcode = onTrue ? IFNE : IFEQ;
+        output.addBranchInstruction(IFEQ, elseLabel);
 
-        output.addBranchInstruction(opcode, targetLabel);
+        output.addNoArgInstruction(ICONST_1); // true
+        output.addBranchInstruction(GOTO, endIfLabel);
+        output.addLabel(elseLabel);
+        output.addNoArgInstruction(ICONST_0); // false
+        output.addLabel(endIfLabel);
     }
 }
 
@@ -87,16 +136,8 @@ class SPLogicalAndOp extends SPBooleanBinaryExpression {
         return this;
     }
 
-    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        if (onTrue) {
-            String falseLabel = output.createLabel();
-            lhs.codegen(output, falseLabel, false);
-            rhs.codegen(output, targetLabel, true);
-            output.addLabel(falseLabel);
-        } else {
-            lhs.codegen(output, targetLabel, false);
-            rhs.codegen(output, targetLabel, false);
-        }
+    @Override
+    public void codegen(CLEmitter output) {
     }
 }
 
@@ -115,16 +156,8 @@ class SPLogicalOrOp extends SPBooleanBinaryExpression {
         return this;
     }
 
-    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        if (onTrue) {
-            String trueLabel = output.createLabel();
-            lhs.codegen(output, trueLabel, false);
-            rhs.codegen(output, targetLabel, false);
-            output.addLabel(trueLabel);
-        } else {
-            lhs.codegen(output, targetLabel, false);
-            rhs.codegen(output, targetLabel, false);
-        }
+    @Override
+    public void codegen(CLEmitter output) {
     }
 }
 

@@ -403,6 +403,16 @@ class Type {
         return Type.VOID;
     }
 
+    private ArrayList<SPExpression> lowerBounds;
+
+    public ArrayList<SPExpression> getArrayLowerBounds(){
+        return lowerBounds;
+    }
+
+    public void setLowerBounds(ArrayList<SPExpression> lowerBounds){
+        this.lowerBounds = lowerBounds;
+    }
+
 }
 
 class TypeName extends Type {
